@@ -15,9 +15,18 @@ const ROOT = join(__dirname, "..");
 const OUT = join(ROOT, "public");
 const SITE_NAME = "x402 Index";
 const SITE_DESC = "Índice de APIs y fuentes de datos pagables por uso vía el protocolo x402, para personas y para agentes.";
-const SITE_URL = "https://mswitach.github.io/direct-apis";
-// GitHub Pages sirve este repo como "project site" bajo /direct-apis/, no en
-// la raíz del dominio — todo link interno tiene que llevar este prefijo.
+// SITE_URL se resuelve en este orden: variable de entorno explícita (para
+// fijar el dominio propio una vez conectado) → dominio de producción que
+// Vercel inyecta solo en cada build → fallback a GitHub Pages, que sigue
+// activo como espejo secundario y sirve el repo como "project site" bajo
+// /direct-apis/ en vez de en la raíz del dominio.
+const SITE_URL =
+  process.env.SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`) ||
+  "https://mswitach.github.io/direct-apis";
+// Todo link interno lleva este prefijo — queda vacío en Vercel (sirve en la
+// raíz) y en "/direct-apis" en GitHub Pages, derivado automáticamente de la
+// URL de arriba.
 const BASE_PATH = new URL(SITE_URL).pathname.replace(/\/$/, "");
 
 function loadData() {

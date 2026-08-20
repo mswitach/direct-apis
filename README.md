@@ -10,7 +10,18 @@
 npm run build
 ```
 
-Esto escribe todo en `public/` (ignorado por git; lo genera GitHub Actions en cada push a `main` y lo publica en GitHub Pages).
+Esto escribe todo en `public/` (ignorado por git).
+
+## Hosting
+
+El sitio productivo vive en **Vercel** (dominio propio) y se redeploya solo en cada push a `main` — Vercel detecta `vercel.json` (`buildCommand` + `outputDirectory`) sin configuración manual. GitHub Pages sigue activo como espejo secundario en `mswitach.github.io/direct-apis` vía `.github/workflows/deploy.yml`.
+
+`SITE_URL` (canonical, JSON-LD, sitemap, links internos) se resuelve así en `build.mjs`:
+1. Variable de entorno `SITE_URL`, si está seteada (usarla para fijar el dominio propio una vez conectado)
+2. `VERCEL_PROJECT_PRODUCTION_URL`, que Vercel inyecta solo en cada build
+3. Fallback a la URL de GitHub Pages
+
+Como GitHub Pages sirve este repo bajo `/direct-apis/` (project site) y Vercel sirve en la raíz del dominio, `BASE_PATH` se deriva automáticamente de `SITE_URL` — no hace falta tocar nada al cambiar de hosting.
 
 ```
 data/apis.json         fuente de verdad: un array de APIs, campos crudos sin normalizar
@@ -30,7 +41,7 @@ npm run build
 
 `ingest.mjs` espera la misma tabla markdown de siempre (columnas `# | Nombre | Categoría | Descripción | Precio | Red | URL | Fecha detectada | Fuente`). Matchea cada fila contra `data/apis.json` por el slug del nombre: si ya existe, actualiza sus campos (conservando el `date_detected` original); si no, la agrega como nueva. Al final imprime cuántas entradas se agregaron y cuántas se actualizaron.
 
-Después de correr `ingest.mjs`, commitear `data/apis.json` y pushear alcanza — el workflow de GitHub Actions hace el build y el deploy solo.
+Después de correr `ingest.mjs`, commitear `data/apis.json` y pushear a `main` alcanza — Vercel (y el workflow de GitHub Actions como espejo) hacen el build y el deploy solos.
 
 ## Schema de `data/apis.json`
 
