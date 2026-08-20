@@ -1,0 +1,11 @@
+{
+  "name": "direct-apis",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Índice de APIs pagables por uso vía x402, para personas y agentes.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "ingest": "node scripts/ingest.mjs"
+  }
+}
