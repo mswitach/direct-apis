@@ -52,6 +52,6 @@ Después de correr `ingest.mjs`, commitear `data/apis.json` y pushear alcanza �
 ## Salidas para agentes
 
 - `/api/apis.json` — dataset completo
-- `/api/apis.json.ndjson` — un objeto JSON por línea
+- `/api/apis.ndjson` — un objeto JSON por línea
 - `/llms.txt` — guía de navegación pensada para LLMs
 - Cada ficha (`/apis/<id>/`) trae JSON-LD embebido

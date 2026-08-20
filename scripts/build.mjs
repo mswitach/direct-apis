@@ -16,6 +16,9 @@ const OUT = join(ROOT, "public");
 const SITE_NAME = "x402 Index";
 const SITE_DESC = "Índice de APIs y fuentes de datos pagables por uso vía el protocolo x402, para personas y para agentes.";
 const SITE_URL = "https://mswitach.github.io/direct-apis";
+// GitHub Pages sirve este repo como "project site" bajo /direct-apis/, no en
+// la raíz del dominio — todo link interno tiene que llevar este prefijo.
+const BASE_PATH = new URL(SITE_URL).pathname.replace(/\/$/, "");
 
 function loadData() {
   const raw = readFileSync(join(ROOT, "data", "apis.json"), "utf-8");
@@ -45,11 +48,11 @@ function layout({ title, description, canonical, body, jsonLd }) {
 <meta property="og:title" content="${escapeHtml(title)}">
 <meta property="og:description" content="${escapeHtml(description)}">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="${BASE_PATH}/styles.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="alternate" type="application/json" href="/api/apis.json" title="${SITE_NAME} — dataset JSON">
+<link rel="alternate" type="application/json" href="${BASE_PATH}/api/apis.json" title="${SITE_NAME} — dataset JSON">
 ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : ""}
 </head>
 <body>
@@ -60,14 +63,14 @@ ${body}
 
 function siteHeader(active) {
   return `<header class="topbar">
-  <a class="brand" href="/">
+  <a class="brand" href="${BASE_PATH}/">
     <span class="brand-mark">402</span>
     <span class="brand-name">${SITE_NAME}</span>
   </a>
   <nav class="topnav">
-    <a href="/" class="${active === "home" ? "is-active" : ""}">Listado</a>
-    <a href="/api/apis.json">JSON</a>
-    <a href="/llms.txt">llms.txt</a>
+    <a href="${BASE_PATH}/" class="${active === "home" ? "is-active" : ""}">Listado</a>
+    <a href="${BASE_PATH}/api/apis.json">JSON</a>
+    <a href="${BASE_PATH}/llms.txt">llms.txt</a>
     <a href="https://github.com/mswitach/direct-apis">Repo</a>
   </nav>
 </header>`;
@@ -87,7 +90,7 @@ function apiCard(api) {
   data-price-min="${api.price.amountMin ?? ""}"
   data-new="${api.isNew ? "1" : "0"}">
   <div class="card-top">
-    <h3><a href="/apis/${api.slug}/">${escapeHtml(api.name)}</a></h3>
+    <h3><a href="${BASE_PATH}/apis/${api.slug}/">${escapeHtml(api.name)}</a></h3>
     ${api.isNew ? '<span class="badge-new">nueva hoy</span>' : ""}
   </div>
   <div class="card-tags">${tagsHtml}</div>
@@ -153,10 +156,10 @@ function renderIndex({ updatedAt, apis }) {
   <p class="empty-state" id="empty-state" hidden>No hay APIs que matcheen esos filtros.</p>
 </main>
 <footer class="sitefoot">
-  <p>Datos abiertos, sin API key: <a href="/api/apis.json">apis.json</a> · <a href="/api/apis.ndjson">apis.ndjson</a> · <a href="/llms.txt">llms.txt</a></p>
+  <p>Datos abiertos, sin API key: <a href="${BASE_PATH}/api/apis.json">apis.json</a> · <a href="${BASE_PATH}/api/apis.ndjson">apis.ndjson</a> · <a href="${BASE_PATH}/llms.txt">llms.txt</a></p>
   <p>Relevamiento diario, curado a mano. Última actualización: <span class="mono">${updatedAt}</span>.</p>
 </footer>
-<script src="/app.js"></script>`;
+<script src="${BASE_PATH}/app.js"></script>`;
 
   return layout({
     title: `${SITE_NAME} — APIs pagables por uso vía x402`,
@@ -184,7 +187,7 @@ function renderDetail(api) {
 
   const body = `${siteHeader("detail")}
 <main class="page page-detail">
-  <nav class="breadcrumbs"><a href="/">Listado</a> <span aria-hidden="true">/</span> ${escapeHtml(api.name)}</nav>
+  <nav class="breadcrumbs"><a href="${BASE_PATH}/">Listado</a> <span aria-hidden="true">/</span> ${escapeHtml(api.name)}</nav>
   <article class="detail">
     <div class="card-tags">${api.tags.map((t) => `<span class="chip">${escapeHtml(t)}</span>`).join("")}</div>
     <h1>${escapeHtml(api.name)}</h1>
@@ -202,12 +205,12 @@ function renderDetail(api) {
     <div class="detail-links">
       ${api.url ? `<a class="btn-primary" href="${escapeHtml(api.url)}">Sitio oficial ↗</a>` : ""}
       ${api.source_url ? `<a class="btn-ghost" href="${escapeHtml(api.source_url.split(" ; ")[0])}">Fuente ↗</a>` : ""}
-      <a class="btn-ghost" href="/api/apis.json#${api.slug}">Ver en JSON</a>
+      <a class="btn-ghost" href="${BASE_PATH}/api/apis.json#${api.slug}">Ver en JSON</a>
     </div>
   </article>
 </main>
 <footer class="sitefoot">
-  <p><a href="/">← Volver al listado completo</a></p>
+  <p><a href="${BASE_PATH}/">← Volver al listado completo</a></p>
 </footer>`;
 
   return layout({
@@ -234,7 +237,7 @@ function renderLlmsTxt({ updatedAt, apis }) {
     "## Datos",
     "",
     `- [Dataset completo en JSON](${SITE_URL}/api/apis.json): array de objetos, un objeto por API, ver el schema en el propio repo (data/apis.json).`,
-    `- [Dataset en NDJSON](${SITE_URL}/api/apis.json.ndjson): un objeto JSON por línea, útil para procesar en streaming.`,
+    `- [Dataset en NDJSON](${SITE_URL}/api/apis.ndjson): un objeto JSON por línea, útil para procesar en streaming.`,
     `- [Listado navegable](${SITE_URL}/): la misma información en HTML, con filtros por categoría, red de pago y precio.`,
     "",
     "## Páginas por API",
@@ -281,7 +284,7 @@ function build() {
 
   const publicApis = data.apis.map(({ slug, tags, price, isNew, ...raw }) => raw);
   writeFileSync(join(OUT, "api", "apis.json"), JSON.stringify({ updated_at: data.updatedAt, count: publicApis.length, apis: publicApis }, null, 2));
-  writeFileSync(join(OUT, "api", "apis.json.ndjson"), publicApis.map((a) => JSON.stringify(a)).join("\n") + "\n");
+  writeFileSync(join(OUT, "api", "apis.ndjson"), publicApis.map((a) => JSON.stringify(a)).join("\n") + "\n");
 
   writeFileSync(join(OUT, "llms.txt"), renderLlmsTxt(data));
   writeFileSync(join(OUT, "robots.txt"), renderRobotsTxt());
