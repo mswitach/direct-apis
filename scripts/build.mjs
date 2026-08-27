@@ -372,6 +372,7 @@ function build() {
 
   cpSync(join(ROOT, "src", "styles.css"), join(OUT, "styles.css"));
   cpSync(join(ROOT, "src", "app.js"), join(OUT, "app.js"));
+  cpSync(join(ROOT, "src", "openapi.json"), join(OUT, "openapi.json"));
 
   console.log(`Build OK: ${data.apis.length} APIs → ${OUT}`);
 }

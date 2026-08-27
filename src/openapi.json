@@ -1,0 +1,82 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Marketplace 402 API",
+    "description": "Catálogo chico y confiable de APIs LatAm pagables por uso vía x402",
+    "version": "2.0.0",
+    "contact": {
+      "name": "Marcelo Switach",
+      "url": "https://github.com/mswitach/direct-apis"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://marketplace-402.vercel.app",
+      "description": "Producción"
+    },
+    {
+      "url": "http://localhost:3402",
+      "description": "Desarrollo local"
+    }
+  ],
+  "paths": {
+    "/.well-known/x402.json": {
+      "get": {
+        "summary": "Well-known x402 del marketplace",
+        "description": "Metadatos del marketplace en formato x402",
+        "responses": {
+          "200": {
+            "description": "Metadatos del marketplace"
+          }
+        }
+      }
+    },
+    "/discovery/resources": {
+      "get": {
+        "summary": "Listado de recursos (Bazaar-compatible)",
+        "responses": {
+          "200": {
+            "description": "Catálogo de APIs"
+          }
+        }
+      }
+    },
+    "/api/search": {
+      "get": {
+        "summary": "Búsqueda con facetas",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "callable",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["live", "dead", "unchecked"] }
+          },
+          {
+            "name": "taxonomy",
+            "in": "query",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultados con facetas"
+          }
+        }
+      }
+    }
+  }
+}
