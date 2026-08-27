@@ -198,6 +198,61 @@ select, .btn-ghost, .btn-primary {
   padding: 0.2em 0.55em;
   border-radius: 999px;
 }
+.chip-taxonomy {
+  background: var(--accent2-soft);
+  border-color: var(--accent2);
+  color: var(--accent2);
+}
+.badge-country {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.66rem;
+  font-weight: 600;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 0.25em 0.5em;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+.badge-callable {
+  font-size: 0.9rem;
+  padding: 0.1em 0.3em;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+}
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  padding: 0.25em 0.6em;
+  border-radius: 999px;
+  font-weight: 500;
+}
+.status-live {
+  background: var(--accent2-soft);
+  color: var(--accent2);
+}
+.status-dead {
+  background: rgba(255,0,0,0.1);
+  color: #c44;
+}
+.status-unchecked {
+  background: var(--surface-2);
+  color: var(--ink-dim);
+}
+.card-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.card-taxonomy {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+}
 .card-desc { font-size: 0.88rem; color: var(--ink-dim); margin: 0; flex-grow: 1; }
 .card-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; padding-top: 0.5rem; border-top: 1px solid var(--line); }
 .price { color: var(--accent); font-size: 0.86rem; }

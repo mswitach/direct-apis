@@ -1,11 +1,19 @@
 {
-  "name": "direct-apis",
-  "version": "1.0.0",
+  "name": "marketplace-402",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Índice de APIs pagables por uso vía x402, para personas y agentes.",
+  "description": "Marketplace chico y confiable de APIs LatAm pagables por uso vía x402.",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "ingest": "node scripts/ingest.mjs"
+    "ingest": "node scripts/ingest.mjs",
+    "dev": "node server/index.mjs",
+    "start": "node server/index.mjs",
+    "probe": "node scripts/probe.mjs",
+    "fetch-ar-agent": "node scripts/fetch-ar-agent.mjs",
+    "enrich": "node scripts/enrich-taxonomy.mjs"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
   }
 }
