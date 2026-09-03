@@ -264,13 +264,13 @@ function renderIndex({ updatedAt, apis }) {
     <div class="chip-row" id="tag-filters">${tagChips}</div>
   </section>
 
-  <p class="result-count" id="result-count" aria-live="polite"></p>
+  <p class="result-count" id="result-count" aria-live="polite">${counts.mainnet} ${counts.mainnet === 1 ? "API encontrada" : "APIs encontradas"} (mainnet)</p>
 
   <section class="grid" id="grid">
     ${cards}
   </section>
 
-  <p class="empty-state" id="empty-state" hidden>No hay APIs que matcheen esos filtros. La vista default es mainnet; usá los chips para ver testnet / dead / incomplete.</p>
+  <p class="empty-state" id="empty-state"${counts.mainnet === 0 ? "" : " hidden"}>No hay APIs que matcheen esos filtros. La vista default es mainnet (hoy: ${counts.mainnet}). Testnet no es inventario de liquidación.</p>
 </main>
 ${siteFoot(updatedAt)}
 <script src="${BASE_PATH}/app.js"></script>`;
