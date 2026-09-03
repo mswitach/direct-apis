@@ -68,7 +68,7 @@ export function apiRoutes() {
     const facets = {
       categories: [...new Set(results.map(a => a.category).filter(Boolean))],
       countries: [...new Set(results.flatMap(a => a.country || []))],
-      callable_states: [...new Set(results.map(a => a.callable || "unchecked"))],
+      callable_states: [...new Set(results.map(a => a.callable || "dead"))],
       taxonomies: [...new Set(results.flatMap(a => a.taxonomy || []))]
     };
 
@@ -82,7 +82,7 @@ export function apiRoutes() {
         category: api.category,
         price: api.price_display,
         network: api.network,
-        callable: api.callable || "unchecked",
+        callable: api.callable || "dead",
         country: api.country,
         taxonomy: api.taxonomy,
         extensions: api.extensions,
@@ -104,14 +104,14 @@ export function apiRoutes() {
     // 1. Fetch a URL/.well-known/x402.json
     // 2. Challenge 402
     // 3. Parsear bazaar extension si existe
-    // 4. Agregar a data/apis.json con callable: "unchecked"
+    // 4. Agregar a data/apis.json con callable: "dead" hasta el próximo probe
     
     // Por ahora, retornamos éxito con instrucciones
     res.json({
       mensaje: "Envío recibido. En producción, probaríamos el endpoint y lo agregaríamos al catálogo.",
       url_enviada: url,
       siguiente_paso: "El sistema probaría /.well-known/x402.json y haría un challenge 402",
-      nota: "MVP: agregar manualmente a data/apis.json con callable: 'unchecked'"
+      nota: "MVP: agregar manualmente a data/apis.json; el probe clasifica mainnet|testnet|dead|incomplete"
     });
   });
 
@@ -137,7 +137,7 @@ export function apiRoutes() {
       api: {
         id: api.id,
         name: api.name,
-        callable: api.callable || "unchecked",
+        callable: api.callable || "dead",
         last_probed_at: api.last_probed_at,
         http_status: api.http_status,
         endpoint_url: api.endpoint_url

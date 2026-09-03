@@ -72,7 +72,7 @@ export function mcpRoutes() {
         categoria: api.category,
         precio: api.price_display,
         red: api.network,
-        callable: api.callable || "unchecked",
+        callable: api.callable || "dead",
         pais: api.country,
         taxonomia: api.taxonomy,
         url: api.endpoint_url || api.url
@@ -104,7 +104,7 @@ export function mcpRoutes() {
       protocolo: api.protocol,
       pay_to: api.pay_to,
       endpoint_url: api.endpoint_url,
-      callable: api.callable || "unchecked",
+      callable: api.callable || "dead",
       last_probed_at: api.last_probed_at,
       http_status: api.http_status,
       pais: api.country,

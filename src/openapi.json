@@ -27,7 +27,7 @@
     "/.well-known/x402.json": {
       "get": {
         "summary": "Well-known x402 del marketplace",
-        "description": "Metadatos de LupaPlaza. En el host estático el campo mcp.live_proxy es local-only.",
+        "description": "Metadatos de LupaPlaza: marketplace de APIs pagables en mainnet. Testnet no se anuncia como inventario settleable. En el host estático mcp.live_proxy es local-only.",
         "responses": {
           "200": {
             "description": "Metadatos del marketplace"
@@ -38,7 +38,7 @@
     "/discovery/resources": {
       "get": {
         "summary": "Listado de recursos (Bazaar-compatible)",
-        "description": "Catálogo estático generado en `npm run build`. También existe /discovery/resources.json.",
+        "description": "Catálogo estático **solo mainnet** generado en `npm run build`. Testnet/dead/incomplete no entran. También existe /discovery/resources.json.",
         "responses": {
           "200": {
             "description": "Catálogo de APIs"
@@ -59,7 +59,7 @@
     "/api/apis.json": {
       "get": {
         "summary": "Dump honesto del catálogo",
-        "description": "Misma fuente que discovery. En el host estático no hay /api/search con query params.",
+        "description": "Dump completo con callable honesto (mainnet|testnet|dead|incomplete). /discovery/resources es un subset mainnet-only. En el host estático no hay /api/search.",
         "responses": {
           "200": {
             "description": "Dataset completo"
@@ -121,7 +121,7 @@
           {
             "name": "callable",
             "in": "query",
-            "schema": { "type": "string", "enum": ["live", "dead", "unchecked"] }
+            "schema": { "type": "string", "enum": ["mainnet", "testnet", "dead", "incomplete"] }
           },
           {
             "name": "taxonomy",

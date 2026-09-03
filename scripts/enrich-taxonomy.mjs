@@ -64,7 +64,7 @@ function enrichExistingApis() {
 
     // Asegurar que tiene campos marketplace
     if (!api.callable) {
-      api.callable = "unchecked";
+      api.callable = "dead";
     }
     if (!api.extensions) {
       api.extensions = [];

@@ -2,12 +2,17 @@
 // Fetcher para ar-agent-fx.mswitach.workers.dev
 // Obtiene endpoints, schemas, precios del worker y genera listings first-party.
 // Los paths siguen el well-known vivo del worker (no los paths viejos /v1/fx/blue).
-// Cada listing se probea en su path concreto: live|dead honesto, sin disfrazar.
+// Cada listing se probea en su path concreto. Sepolia = testnet, nunca mainnet.
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { fillPathTemplate, classifyProbeStatus } from "./lib/probe-url.mjs";
+import {
+  CALLABLE,
+  applyProbeToListing,
+  fillPathTemplate,
+  probeTarget,
+} from "./lib/probe-url.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -15,7 +20,6 @@ const DATA_FILE = join(ROOT, "data", "apis.json");
 
 const AR_AGENT_BASE = "https://ar-agent-fx.mswitach.workers.dev";
 const PAY_TO = "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F";
-const NETWORK = "Base Sepolia (eip155:84532)";
 
 // 12 listings first-party (21 + 12 = 33). No se agrega cheques-rechazados
 // ni se inventa volumen: mismos IDs, paths alineados al well-known actual.
@@ -148,17 +152,7 @@ const AR_AGENT_ENDPOINTS = [
 
 async function probePath(path) {
   const url = `${AR_AGENT_BASE}${fillPathTemplate(path)}`;
-  try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "User-Agent": "LupaPlaza-Probe/2.0" },
-      signal: AbortSignal.timeout(10000),
-    });
-    const classified = classifyProbeStatus(response.status);
-    return { ...classified, error: classified.callable === "dead" ? `HTTP ${response.status}` : null, url };
-  } catch (error) {
-    return { callable: "dead", http_status: null, error: error.message, url };
-  }
+  return probeTarget({ url, path, method: "GET" }, { forceTestnet: true });
 }
 
 async function fetchArAgent() {
@@ -190,21 +184,24 @@ async function fetchArAgent() {
     const probe = await probePath(endpoint.endpoint);
     const now = new Date().toISOString();
 
-    if (probe.callable === "live") {
-      console.log(`   ✅ ${endpoint.name}: live (HTTP ${probe.http_status}) ${probe.url}`);
+    if (probe.callable === CALLABLE.TESTNET) {
+      console.log(`   🧪 ${endpoint.name}: testnet (HTTP ${probe.http_status}) ${probe.url}`);
       live++;
+    } else if (probe.callable === CALLABLE.INCOMPLETE) {
+      console.log(`   ⚠️  ${endpoint.name}: incomplete (${probe.error || "402 sin campos"}) ${probe.url}`);
+      dead++;
     } else {
-      console.log(`   ❌ ${endpoint.name}: dead (${probe.error}) ${probe.url}`);
+      console.log(`   ❌ ${endpoint.name}: ${probe.callable} (${probe.error}) ${probe.url}`);
       dead++;
     }
 
-    const apiEntry = {
+    const seed = {
       id: endpoint.id,
       name: endpoint.name,
       category: endpoint.category,
       description: endpoint.description,
       price_display: endpoint.price,
-      network: NETWORK,
+      network: null,
       protocol: "x402",
       url: AR_AGENT_BASE,
       endpoint_url: AR_AGENT_BASE,
@@ -213,9 +210,6 @@ async function fetchArAgent() {
       date_detected: existingIndex >= 0 ? data.apis[existingIndex].date_detected : today,
       date_updated: today,
       status: "active",
-      callable: probe.callable,
-      last_probed_at: now,
-      http_status: probe.http_status,
       taxonomy: endpoint.taxonomy,
       country: endpoint.country,
       extensions: [],
@@ -229,6 +223,9 @@ async function fetchArAgent() {
         },
       ],
     };
+    const apiEntry = applyProbeToListing(seed, [{ ...probe, probed_at: probe.probed_at || now }]);
+    // AR first-party: Sepolia nunca es mainnet aunque el parser se confunda.
+    if (apiEntry.callable === CALLABLE.MAINNET) apiEntry.callable = CALLABLE.TESTNET;
 
     if (existingIndex >= 0) {
       data.apis[existingIndex] = apiEntry;
@@ -248,7 +245,7 @@ async function fetchArAgent() {
   console.log(`   ${added} endpoints agregados`);
   console.log(`   ${updated} endpoints actualizados`);
   console.log(`   Worker /health: ${workerLive ? "live" : "down"}`);
-  console.log(`   Paths: ${live} live, ${dead} dead`);
+  console.log(`   Paths: ${live} testnet, ${dead} dead/incomplete`);
   console.log("\ndata/apis.json actualizado.");
 }
 
