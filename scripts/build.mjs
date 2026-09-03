@@ -19,13 +19,13 @@ const SITE_DESC = "Catálogo chico y confiable de APIs LatAm pagables por uso v�
 // fijar el dominio propio una vez conectado) → dominio de producción que
 // Vercel inyecta solo en cada build → fallback a GitHub Pages, que sigue
 // activo como espejo secundario y sirve el repo como "project site" bajo
-// /direct-apis/ en vez de en la raíz del dominio.
+// /marketplace-402/ en vez de en la raíz del dominio.
 const SITE_URL =
   process.env.SITE_URL ||
   (process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`) ||
-  "https://mswitach.github.io/direct-apis";
+  "https://mswitach.github.io/marketplace-402";
 // Todo link interno lleva este prefijo — queda vacío en Vercel (sirve en la
-// raíz) y en "/direct-apis" en GitHub Pages, derivado automáticamente de la
+// raíz) y en "/marketplace-402" en GitHub Pages, derivado automáticamente de la
 // URL de arriba.
 const BASE_PATH = new URL(SITE_URL).pathname.replace(/\/$/, "");
 
@@ -80,7 +80,7 @@ function siteHeader(active) {
     <a href="${BASE_PATH}/" class="${active === "home" ? "is-active" : ""}">Listado</a>
     <a href="${BASE_PATH}/api/apis.json">JSON</a>
     <a href="${BASE_PATH}/llms.txt">llms.txt</a>
-    <a href="https://github.com/mswitach/direct-apis">Repo</a>
+    <a href="https://github.com/mswitach/marketplace-402">Repo</a>
   </nav>
 </header>`;
 }
