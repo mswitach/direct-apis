@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Marketplace 402 API",
-    "description": "Catálogo chico y confiable de APIs LatAm pagables por uso vía x402",
+    "title": "LupaPlaza API",
+    "description": "Catálogo chico y confiable de APIs LatAm pagables por uso vía x402. El host estático (Vercel / GitHub Pages) solo sirve GET de discovery. Submit, probe en vivo, /api/search y POST /mcp/* corren solo en Express local (`npm run dev` :3402).",
     "version": "2.0.0",
     "contact": {
       "name": "Marcelo Switach",
@@ -11,19 +11,23 @@
   },
   "servers": [
     {
+      "url": "https://mswitach.github.io/marketplace-402",
+      "description": "GitHub Pages (estático)"
+    },
+    {
       "url": "https://marketplace-402.vercel.app",
-      "description": "Producción"
+      "description": "Vercel (estático, si está conectado)"
     },
     {
       "url": "http://localhost:3402",
-      "description": "Desarrollo local"
+      "description": "Express local — submit, probe, MCP POST, /api/search"
     }
   ],
   "paths": {
     "/.well-known/x402.json": {
       "get": {
         "summary": "Well-known x402 del marketplace",
-        "description": "Metadatos del marketplace en formato x402",
+        "description": "Metadatos de LupaPlaza. En el host estático el campo mcp.live_proxy es local-only.",
         "responses": {
           "200": {
             "description": "Metadatos del marketplace"
@@ -34,6 +38,7 @@
     "/discovery/resources": {
       "get": {
         "summary": "Listado de recursos (Bazaar-compatible)",
+        "description": "Catálogo estático generado en `npm run build`. También existe /discovery/resources.json.",
         "responses": {
           "200": {
             "description": "Catálogo de APIs"
@@ -41,9 +46,62 @@
         }
       }
     },
+    "/discovery/resources.json": {
+      "get": {
+        "summary": "Mismo catálogo, con extensión .json",
+        "responses": {
+          "200": {
+            "description": "Catálogo de APIs"
+          }
+        }
+      }
+    },
+    "/api/apis.json": {
+      "get": {
+        "summary": "Dump honesto del catálogo",
+        "description": "Misma fuente que discovery. En el host estático no hay /api/search con query params.",
+        "responses": {
+          "200": {
+            "description": "Dataset completo"
+          }
+        }
+      }
+    },
+    "/mcp/manifest.json": {
+      "get": {
+        "summary": "Manifest MCP (estático)",
+        "description": "Lista buscar_servicios, obtener_servicio y llamar_servicio. El call-through en vivo no está desplegado: el agente paga el seller.",
+        "responses": {
+          "200": {
+            "description": "Manifest de herramientas"
+          }
+        }
+      }
+    },
+    "/llms.txt": {
+      "get": {
+        "summary": "Guía para agentes/LLMs",
+        "responses": {
+          "200": {
+            "description": "Texto plano"
+          }
+        }
+      }
+    },
+    "/openapi.json": {
+      "get": {
+        "summary": "Esta especificación OpenAPI 3.1",
+        "responses": {
+          "200": {
+            "description": "OpenAPI document"
+          }
+        }
+      }
+    },
     "/api/search": {
       "get": {
-        "summary": "Búsqueda con facetas",
+        "summary": "Búsqueda con facetas (solo Express local)",
+        "description": "No existe en Vercel/Pages. En el host estático filtrá /api/apis.json o /discovery/resources.",
         "parameters": [
           {
             "name": "q",
@@ -74,6 +132,68 @@
         "responses": {
           "200": {
             "description": "Resultados con facetas"
+          }
+        }
+      }
+    },
+    "/api/submit": {
+      "post": {
+        "summary": "Envío de seller (solo Express local)",
+        "description": "No hay serverless de submit. Decisión 28 Ago: Express no se publica.",
+        "responses": {
+          "200": {
+            "description": "Recibido (MVP: no escribe data/apis.json)"
+          }
+        }
+      }
+    },
+    "/api/probe": {
+      "post": {
+        "summary": "Probe on-demand (solo Express local)",
+        "responses": {
+          "200": {
+            "description": "Estado actual o instrucciones"
+          }
+        }
+      }
+    },
+    "/mcp": {
+      "get": {
+        "summary": "Manifest MCP vivo (solo Express local)",
+        "responses": {
+          "200": {
+            "description": "Herramientas MCP"
+          }
+        }
+      }
+    },
+    "/mcp/buscar_servicios": {
+      "post": {
+        "summary": "buscar_servicios (solo Express local)",
+        "responses": {
+          "200": {
+            "description": "Resultados"
+          }
+        }
+      }
+    },
+    "/mcp/obtener_servicio": {
+      "post": {
+        "summary": "obtener_servicio (solo Express local)",
+        "responses": {
+          "200": {
+            "description": "Detalle"
+          }
+        }
+      }
+    },
+    "/mcp/llamar_servicio": {
+      "post": {
+        "summary": "llamar_servicio (solo Express local; no hay pay-through público)",
+        "description": "En este MVP devuelve instrucciones. El agente paga el endpoint del seller.",
+        "responses": {
+          "200": {
+            "description": "Instrucciones de pago directo"
           }
         }
       }

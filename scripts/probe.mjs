@@ -5,24 +5,28 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { resolveProbeUrl } from "./lib/probe-url.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const DATA_FILE = join(ROOT, "data", "apis.json");
 
+function parseOnlyPrefix() {
+  const flag = process.argv.find((arg) => arg.startsWith("--only="));
+  return flag ? flag.slice("--only=".length) : null;
+}
+
 async function probeEndpoint(api) {
-  if (!api.endpoint_url && !api.url) {
+  const probeUrl = resolveProbeUrl(api);
+  if (!probeUrl) {
     return { callable: "unchecked", http_status: null, error: "No URL disponible" };
   }
 
-  const baseUrl = api.endpoint_url || api.url;
-  
   try {
-    // 1. Intenta GET al endpoint base (esperando 402 o 200 si es gratis)
-    const probeUrl = api.endpoint_url || baseUrl;
+    // GET al path concreto si existe (no el root): 402 o 200 = live.
     const response = await fetch(probeUrl, {
       method: "GET",
-      headers: { "User-Agent": "Marketplace402-Probe/2.0" },
+      headers: { "User-Agent": "LupaPlaza-Probe/2.0" },
       signal: AbortSignal.timeout(10000) // 10s timeout
     });
 
@@ -77,15 +81,24 @@ async function probeWellKnown(baseUrl) {
 async function probe() {
   const raw = readFileSync(DATA_FILE, "utf-8");
   const data = JSON.parse(raw);
+  const onlyPrefix = parseOnlyPrefix();
+  const targets = onlyPrefix
+    ? data.apis.filter((api) => api.id && api.id.startsWith(onlyPrefix))
+    : data.apis;
 
-  console.log(`🔍 Probing ${data.apis.length} APIs...`);
-  
+  if (onlyPrefix && targets.length === 0) {
+    console.error(`No hay APIs con id que empiece por "${onlyPrefix}".`);
+    process.exit(1);
+  }
+
+  console.log(`🔍 Probing ${targets.length} APIs${onlyPrefix ? ` (filtro --only=${onlyPrefix})` : ""}...`);
+
   let probed = 0;
   let live = 0;
   let dead = 0;
   let unchecked = 0;
 
-  for (const api of data.apis) {
+  for (const api of targets) {
     if (!api.endpoint_url && !api.url) {
       console.log(`⏭️  ${api.name}: sin URL, saltando`);
       api.callable = "unchecked";

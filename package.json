@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Marketplace chico y confiable de APIs LatAm pagables por uso vía x402.",
+  "description": "LupaPlaza — catálogo chico y confiable de APIs LatAm pagables por uso vía x402. Código en marketplace-402.",
   "scripts": {
     "build": "node scripts/build.mjs",
     "ingest": "node scripts/ingest.mjs",

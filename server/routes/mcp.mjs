@@ -5,6 +5,7 @@ import { Router } from "express";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { mcpManifestDocument } from "../../scripts/lib/site.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "../..");
@@ -17,55 +18,13 @@ function loadData() {
 export function mcpRoutes() {
   const router = Router();
 
-  // MCP manifest
-  router.get("/", (req, res) => {
-    res.json({
-      name: "Marketplace 402 MCP",
-      description: "Herramientas MCP en español para descubrir y llamar APIs x402 LatAm",
-      version: "2.0.0",
-      tools: [
-        {
-          name: "buscar_servicios",
-          description: "Busca APIs x402 por categoría, país, taxonomía o texto libre. Gratis.",
-          inputSchema: {
-            type: "object",
-            properties: {
-              query: { type: "string", description: "Texto de búsqueda (nombre o descripción)" },
-              categoria: { type: "string", description: "Categoría (ej: 'Finanzas', 'Legal')" },
-              pais: { type: "string", description: "Código ISO de país (AR, MX, CO, BR, CL, PE)" },
-              taxonomia: { type: "string", description: "Tag de taxonomía LatAm (ej: 'fx.ar.casa', 'bcra.deudores')" },
-              callable: { type: "string", enum: ["live", "dead", "unchecked"], description: "Estado de disponibilidad" }
-            }
-          }
-        },
-        {
-          name: "obtener_servicio",
-          description: "Obtiene detalles completos de una API por su ID. Gratis.",
-          inputSchema: {
-            type: "object",
-            properties: {
-              id: { type: "string", description: "ID del servicio" }
-            },
-            required: ["id"]
-          }
-        },
-        {
-          name: "llamar_servicio",
-          description: "Llama a un endpoint x402 (pass-through con pago). El agente paga el monto x402 al proveedor. No cobra fee el marketplace.",
-          inputSchema: {
-            type: "object",
-            properties: {
-              id: { type: "string", description: "ID del servicio" },
-              endpoint: { type: "string", description: "Path del endpoint (ej: '/v1/fx/usd')" },
-              method: { type: "string", enum: ["GET", "POST"], default: "GET" },
-              body: { type: "object", description: "Cuerpo de la request (solo POST)" }
-            },
-            required: ["id", "endpoint"]
-          }
-        }
-      ]
-    });
-  });
+  // MCP manifest (misma forma que public/mcp/manifest.json, sin el disclaimer estático)
+  const sendManifest = (req, res) => {
+    const origin = `${req.protocol}://${req.get("host")}`;
+    res.json(mcpManifestDocument(origin, { staticHost: false }));
+  };
+  router.get("/", sendManifest);
+  router.get("/manifest.json", sendManifest);
 
   // buscar_servicios
   router.post("/buscar_servicios", (req, res) => {

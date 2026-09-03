@@ -22,6 +22,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      # Orden de release: `npm run probe` (o `npm run fetch-ar-agent`) se corre
+      # en la máquina de mantenimiento y se commitea data/apis.json. CI no
+      # probea en vivo: solo emite el public/ estático (discovery + HTML).
       - run: node scripts/build.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
