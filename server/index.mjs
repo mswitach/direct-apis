@@ -39,7 +39,7 @@ app.get("/.well-known/x402.json", (req, res) => {
     regions: ["AR", "MX", "CO", "BR", "CL", "PE"],
     contact: {
       name: "Marcelo Switach",
-      url: "https://github.com/mswitach/direct-apis"
+      url: "https://github.com/mswitach/marketplace-402"
     }
   });
 });

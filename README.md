@@ -248,7 +248,7 @@ No implementado en este MVP, pero anotado para futuro:
 ## Contacto
 
 **Owner**: Marcelo Switach  
-**Repo**: [github.com/mswitach/direct-apis](https://github.com/mswitach/direct-apis)  
+**Repo**: [github.com/mswitach/marketplace-402](https://github.com/mswitach/marketplace-402)  
 **x402 protocol**: [x402.org](https://www.x402.org/)
 
 ---
