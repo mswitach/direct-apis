@@ -23,6 +23,7 @@ import {
   wellKnownDocument,
   mcpManifestDocument,
 } from "./lib/site.mjs";
+import { CALLABLE, formatNetworkDisplay } from "./lib/probe-url.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -116,6 +117,30 @@ function priceLabel(api) {
   return escapeHtml(api.price_display || "—");
 }
 
+function callableMeta(callable) {
+  switch (callable) {
+    case CALLABLE.MAINNET:
+      return { className: "status-mainnet", label: "mainnet" };
+    case CALLABLE.TESTNET:
+      return { className: "status-testnet", label: "testnet" };
+    case CALLABLE.INCOMPLETE:
+      return { className: "status-incomplete", label: "incomplete" };
+    default:
+      return { className: "status-dead", label: "dead" };
+  }
+}
+
+function formatProbedAt(iso) {
+  if (!iso) return "sin probe";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toISOString().replace("T", " ").replace(/\.\d{3}Z$/, " UTC");
+}
+
+function networkDisplay(api) {
+  return formatNetworkDisplay(api.network) || "red no declarada en el 402";
+}
+
 function apiCard(api) {
   const tagsHtml = api.tags.map((t) => `<span class="chip">${escapeHtml(t)}</span>`).join("");
   const taxonomyHtml = api.taxonomy && api.taxonomy.length > 0
@@ -124,17 +149,21 @@ function apiCard(api) {
   const countryBadges = api.country && api.country.length > 0
     ? api.country.map((c) => `<span class="badge-country">${escapeHtml(c)}</span>`).join("")
     : "";
-  const callableClass = api.callable === "live" ? "status-live" : api.callable === "dead" ? "status-dead" : "status-unchecked";
-  const callableLabel = api.callable === "live" ? "🟢" : api.callable === "dead" ? "🔴" : "⚪";
+  const callable = api.callable || CALLABLE.DEAD;
+  const { className: callableClass, label: callableLabel } = callableMeta(callable);
+  const hidden = callable !== CALLABLE.MAINNET ? " hidden" : "";
+  const testnetNote = callable === CALLABLE.TESTNET
+    ? `<p class="card-warn">Testnet — no es USDC de producción / no se liquida en mainnet.</p>`
+    : "";
 
-  return `<article class="card"
+  return `<article class="card"${hidden}
   data-name="${escapeHtml(api.name.toLowerCase())}"
   data-desc="${escapeHtml(api.description.toLowerCase())}"
   data-tags="${escapeHtml(api.tags.join("|").toLowerCase())}"
   data-network="${escapeHtml((api.network || "").toLowerCase())}"
   data-price-min="${api.price.amountMin ?? ""}"
   data-new="${api.isNew ? "1" : "0"}"
-  data-callable="${api.callable || "unchecked"}"
+  data-callable="${escapeHtml(callable)}"
   data-country="${escapeHtml((api.country || []).join("|").toLowerCase())}"
   data-taxonomy="${escapeHtml((api.taxonomy || []).join("|").toLowerCase())}">
   <div class="card-top">
@@ -142,29 +171,44 @@ function apiCard(api) {
     <div class="card-badges">
       ${countryBadges}
       ${api.isNew ? '<span class="badge-new">nueva hoy</span>' : ""}
-      <span class="badge-callable ${callableClass}" title="${api.callable || "unchecked"}">${callableLabel}</span>
+      <span class="badge-callable ${callableClass}">${escapeHtml(callableLabel)}</span>
     </div>
   </div>
   <div class="card-tags">${tagsHtml}</div>
   ${taxonomyHtml ? `<div class="card-taxonomy">${taxonomyHtml}</div>` : ""}
   <p class="card-desc">${escapeHtml(api.description)}</p>
+  ${testnetNote}
   <div class="card-foot">
     <span class="price mono">${priceLabel(api)}</span>
-    <span class="network">${escapeHtml(api.network || "red no especificada")}</span>
+    <span class="network mono">${escapeHtml(networkDisplay(api))}</span>
+  </div>
+  <div class="card-probe">
+    <span class="probe-time mono">probe ${escapeHtml(formatProbedAt(api.last_probed_at))}</span>
+    ${api.is_402 ? `<span class="probe-402 mono">HTTP 402</span>` : api.http_status != null ? `<span class="probe-http mono">HTTP ${escapeHtml(String(api.http_status))}</span>` : `<span class="probe-http mono">sin HTTP</span>`}
   </div>
 </article>`;
+}
+
+function countable(apis) {
+  const counts = { mainnet: 0, testnet: 0, dead: 0, incomplete: 0 };
+  for (const api of apis) {
+    const key = counts[api.callable] != null ? api.callable : CALLABLE.DEAD;
+    counts[key]++;
+  }
+  return counts;
 }
 
 function renderIndex({ updatedAt, apis }) {
   const allTags = [...new Set(apis.flatMap((a) => a.tags))].sort((a, b) => a.localeCompare(b, "es"));
   const allNetworks = [...new Set(apis.map((a) => a.network).filter(Boolean))].sort();
+  const counts = countable(apis);
 
   const tagChips = allTags
     .map((t) => `<button type="button" class="filter-chip" data-filter-tag="${escapeHtml(t.toLowerCase())}">${escapeHtml(t)}</button>`)
     .join("");
 
   const networkOptions = allNetworks
-    .map((n) => `<option value="${escapeHtml(n.toLowerCase())}">${escapeHtml(n)}</option>`)
+    .map((n) => `<option value="${escapeHtml(n.toLowerCase())}">${escapeHtml(formatNetworkDisplay(n) || n)}</option>`)
     .join("");
 
   const cards = apis.map(apiCard).join("\n");
@@ -186,16 +230,24 @@ function renderIndex({ updatedAt, apis }) {
   <section class="hero">
     <p class="eyebrow">${SITE_NAME} · protocolo x402</p>
     <h1>Catálogo chico de APIs LatAm que un agente paga con x402</h1>
-    <p class="dek">${SITE_DESC} Cada endpoint probado: sabemos qué está vivo. Sin listados muertos disfrazados ni wash trading.</p>
+    <p class="dek">${SITE_DESC} Vista por defecto: solo mainnet. Testnet (incl. AR Agent en Base Sepolia) no se presenta como USDC de producción.</p>
     <dl class="stats">
-      <div><dt>APIs relevadas</dt><dd class="mono">${apis.length}</dd></div>
-      <div><dt>Categorías</dt><dd class="mono">${allTags.length}</dd></div>
+      <div><dt>Mainnet (402)</dt><dd class="mono">${counts.mainnet}</dd></div>
+      <div><dt>Testnet</dt><dd class="mono">${counts.testnet}</dd></div>
+      <div><dt>Dead / incomplete</dt><dd class="mono">${counts.dead + counts.incomplete}</dd></div>
       <div><dt>Última actualización</dt><dd class="mono">${updatedAt}</dd></div>
     </dl>
   </section>
 
   <section class="filters" aria-label="Filtros">
     <input type="search" id="q" class="search" placeholder="Buscar por nombre o descripción…" aria-label="Buscar">
+    <div class="filter-row" id="callable-filters" role="group" aria-label="Filtrar por callable">
+      <button type="button" class="filter-chip is-active" data-callable-filter="mainnet">mainnet</button>
+      <button type="button" class="filter-chip" data-callable-filter="testnet">testnet</button>
+      <button type="button" class="filter-chip" data-callable-filter="dead">dead</button>
+      <button type="button" class="filter-chip" data-callable-filter="incomplete">incomplete</button>
+      <button type="button" class="filter-chip" data-callable-filter="all">todas</button>
+    </div>
     <div class="filter-row">
       <select id="network-filter" aria-label="Filtrar por red de pago">
         <option value="">Toda red de pago</option>
@@ -207,18 +259,18 @@ function renderIndex({ updatedAt, apis }) {
         <option value="price-desc">Ordenar: precio (mayor primero)</option>
         <option value="new">Ordenar: más nuevas primero</option>
       </select>
-      <button type="button" id="clear-filters" class="btn-ghost">Limpiar</button>
+      <button type="button" id="clear-filters" class="btn-ghost">Limpiar (mainnet)</button>
     </div>
     <div class="chip-row" id="tag-filters">${tagChips}</div>
   </section>
 
-  <p class="result-count" id="result-count" aria-live="polite"></p>
+  <p class="result-count" id="result-count" aria-live="polite">${counts.mainnet} ${counts.mainnet === 1 ? "API encontrada" : "APIs encontradas"} (mainnet)</p>
 
   <section class="grid" id="grid">
     ${cards}
   </section>
 
-  <p class="empty-state" id="empty-state" hidden>No hay APIs que matcheen esos filtros.</p>
+  <p class="empty-state" id="empty-state"${counts.mainnet === 0 ? "" : " hidden"}>No hay APIs que matcheen esos filtros. La vista default es mainnet (hoy: ${counts.mainnet}). Testnet no es inventario de liquidación.</p>
 </main>
 ${siteFoot(updatedAt)}
 <script src="${BASE_PATH}/app.js"></script>`;
@@ -259,12 +311,14 @@ function renderDetail(api) {
     <p class="detail-desc">${escapeHtml(api.description)}</p>
 
     <dl class="ledger">
-      <div class="ledger-row"><dt>Precio</dt><dd class="mono">${priceLabel(api)}</dd></div>
-      <div class="ledger-row"><dt>Red de pago</dt><dd>${escapeHtml(api.network || "no especificada")}</dd></div>
+      <div class="ledger-row"><dt>Precio (catálogo)</dt><dd class="mono">${priceLabel(api)}</dd></div>
+      ${api.amount ? `<div class="ledger-row"><dt>Amount (402)</dt><dd class="mono">${escapeHtml(String(api.amount))}${api.asset ? ` · ${escapeHtml(api.asset)}` : ""}</dd></div>` : ""}
+      <div class="ledger-row"><dt>Red de pago</dt><dd class="mono">${escapeHtml(networkDisplay(api))}</dd></div>
       <div class="ledger-row"><dt>Protocolo</dt><dd class="mono">${escapeHtml(api.protocol)}</dd></div>
       <div class="ledger-row"><dt>Categoría</dt><dd>${escapeHtml(api.category)}</dd></div>
-      ${api.callable ? `<div class="ledger-row"><dt>Estado</dt><dd><span class="status-badge status-${api.callable}">${api.callable === "live" ? "🟢 Verificado vivo" : api.callable === "dead" ? "🔴 No responde" : "⚪ No verificado"}</span></dd></div>` : ""}
-      ${api.last_probed_at ? `<div class="ledger-row"><dt>Último probe</dt><dd class="mono">${escapeHtml(new Date(api.last_probed_at).toLocaleString("es-AR"))}</dd></div>` : ""}
+      ${(() => { const m = callableMeta(api.callable || CALLABLE.DEAD); const note = m.label === "testnet" ? " — no es liquidación mainnet / no es USDC de producción" : ""; return `<div class="ledger-row"><dt>Callable</dt><dd><span class="status-badge ${m.className}">${escapeHtml(m.label)}</span>${escapeHtml(note)}</dd></div>`; })()}
+      <div class="ledger-row"><dt>HTTP / 402</dt><dd class="mono">${api.http_status == null ? "—" : escapeHtml(String(api.http_status))}${api.is_402 ? " · is_402" : ""}</dd></div>
+      ${api.last_probed_at ? `<div class="ledger-row"><dt>Último probe</dt><dd class="mono">${escapeHtml(formatProbedAt(api.last_probed_at))}</dd></div>` : ""}
       ${api.country && api.country.length > 0 ? `<div class="ledger-row"><dt>País/región</dt><dd>${api.country.map((c) => `<span class="badge-country">${escapeHtml(c)}</span>`).join(" ")}</dd></div>` : ""}
       ${api.pay_to ? `<div class="ledger-row"><dt>Pay to</dt><dd class="mono" style="word-break: break-all; font-size: 0.8rem;">${escapeHtml(api.pay_to)}</dd></div>` : ""}
       ${api.extensions && api.extensions.length > 0 ? `<div class="ledger-row"><dt>Extensiones</dt><dd>${api.extensions.map((e) => `<span class="chip">${escapeHtml(e)}</span>`).join(" ")}</dd></div>` : ""}
@@ -299,42 +353,43 @@ function renderLlmsTxt({ updatedAt, apis }) {
     "",
     `> ${SITE_DESC}`,
     "",
-    `Última actualización de datos: ${updatedAt}. Total de APIs: ${apis.length}.`,
+    `Última actualización de datos: ${updatedAt}. Total de APIs (dump): ${apis.length}. Mainnet en discovery: ${apis.filter((a) => a.callable === "mainnet").length}.`,
     `Producto: ${SITE_NAME}. Código: ${REPO_URL} (slug marketplace-402).`,
     "",
     `## Qué es ${SITE_NAME}`,
     "",
-    "Un catálogo chico y confiable de APIs LatAm pagables vía x402.",
-    "Cada endpoint se prueba (probe) para saber si está vivo.",
+    "Un catálogo chico de APIs LatAm pagables vía x402.",
+    "Cada endpoint se prueba (probe) y se clasifica: mainnet | testnet | dead | incomplete.",
+    "Discovery público = **solo mainnet**. Testnet (p. ej. AR Agent en Base Sepolia / eip155:84532) no es inventario de liquidación.",
     "Incluye taxonomía regional (fx.ar.casa, bcra.deudores, afip.cuit, etc.).",
-    "No listamos 15k servicios wash; preferimos calidad sobre volumen.",
+    "No listamos 15k servicios wash; preferimos verdad sobre un catálogo bonito.",
     "El sitio publicado (Vercel / GitHub Pages) es solo el output estático de `npm run build`.",
     "No hay servidor Express en producción. Submit, probe en vivo y MCP call-through son local-only.",
     "",
     "## Para agentes",
     "",
     "Este sitio está pensado para ser leído tanto por personas como por agentes/LLMs.",
-    "El HTML de cada página ya contiene el listado completo (sin necesidad de ejecutar JS),",
-    "y además exponemos los mismos datos en formatos estructurados.",
+    "El HTML de cada página ya contiene el listado (sin necesidad de ejecutar JS).",
+    "La vista humana por defecto es mainnet; testnet/dead/incomplete se muestran con filtros.",
     "",
     "### Rutas de discovery (estáticas, sin Express)",
     "",
-    `- [/.well-known/x402.json](${SITE_URL}/.well-known/x402.json): metadatos del marketplace`,
-    `- [/discovery/resources](${SITE_URL}/discovery/resources): catálogo Bazaar-shaped (archivo sin extensión)`,
-    `- [/discovery/resources.json](${SITE_URL}/discovery/resources.json): el mismo catálogo, con extensión (hosts que exigen .json)`,
-    `- [/api/apis.json](${SITE_URL}/api/apis.json): dump honesto del catálogo (misma fuente que discovery)`,
+    `- [/.well-known/x402.json](${SITE_URL}/.well-known/x402.json): marketplace de APIs pagables en **mainnet**`,
+    `- [/discovery/resources](${SITE_URL}/discovery/resources): catálogo Bazaar-shaped **solo mainnet** (archivo sin extensión)`,
+    `- [/discovery/resources.json](${SITE_URL}/discovery/resources.json): el mismo feed mainnet, con extensión`,
+    `- [/api/apis.json](${SITE_URL}/api/apis.json): dump completo con callable honesto (mainnet/testnet/dead/incomplete). Discovery está filtrado a mainnet.`,
     `- [/openapi.json](${SITE_URL}/openapi.json): OpenAPI 3.1 spec`,
     `- [/llms.txt](${SITE_URL}/llms.txt): esta guía`,
-    `- [/mcp/manifest.json](${SITE_URL}/mcp/manifest.json): herramientas MCP y cómo llamar al seller directo`,
+    `- [/mcp/manifest.json](${SITE_URL}/mcp/manifest.json): herramientas MCP. Agentes descubren mainnet vía /discovery/resources; testnet es para humanos/local.`,
     "",
-    "No hay `GET /api/search` en el host estático. Filtrá `apis.json` o `discovery/resources` en el cliente.",
+    "No hay `GET /api/search` en el host estático. Filtrá `discovery/resources` (mainnet) o `apis.json` (todas las filas) en el cliente.",
     "La búsqueda con query params vive solo en Express local: `GET http://localhost:3402/api/search`.",
     "",
     "### MCP (Model Context Protocol) en español",
     "",
     "Tres herramientas. En el host estático solo hay un manifest: no hay proxy MCP público ni pay-through.",
     "",
-    "- **buscar_servicios**: leé `/discovery/resources` o `/api/apis.json` y filtrá (gratis)",
+    "- **buscar_servicios**: leé `/discovery/resources` (mainnet) o `/api/apis.json` (dump completo) y filtrá (gratis)",
     "- **obtener_servicio**: buscá el `id` en ese catálogo (gratis)",
     "- **llamar_servicio**: pagá el `url`/`payTo` del seller. No hay call-through público.",
     "",
@@ -343,9 +398,9 @@ function renderLlmsTxt({ updatedAt, apis }) {
     "",
     "### Datos descargables",
     "",
-    `- [Dataset completo en JSON](${SITE_URL}/api/apis.json): array de objetos, un objeto por API`,
+    `- [Dataset completo en JSON](${SITE_URL}/api/apis.json): todas las filas + campos callable/is_402/network/asset/amount/pay_to. Discovery es un subset mainnet.`,
     `- [Dataset en NDJSON](${SITE_URL}/api/apis.ndjson): un objeto JSON por línea`,
-    `- [Listado navegable](${SITE_URL}/): HTML con filtros por categoría, país, callable, taxonomía`,
+    `- [Listado navegable](${SITE_URL}/): HTML; default mainnet; chips para testnet/dead/incomplete/todas`,
     "",
     "## Páginas por API",
     "",
@@ -357,9 +412,11 @@ function renderLlmsTxt({ updatedAt, apis }) {
     "",
     "## Schema de callable status",
     "",
-    "- **live**: el endpoint respondió 402 o 200 en el último probe",
-    "- **dead**: el endpoint no respondió o devolvió 4xx/5xx",
-    "- **unchecked**: aún no se probó",
+    "- **mainnet**: 402 live en una red mainnet evidenciada (p. ej. eip155:8453, Solana mainnet). Esto es lo que publica /discovery/resources.",
+    "- **testnet**: 402 live en testnet (eip155:84532 Base Sepolia, Solana Devnet, etc.). Todos los listings `ar-agent-*` de Sepolia son testnet, nunca mainnet. No son USDC de producción.",
+    "- **dead**: inalcanzable, no-402 cuando se esperaba paywall, o fallo claro.",
+    "- **incomplete**: respondió 402 pero faltan network/asset/amount/payTo para pagar. Si el 402 no declara red, network queda null.",
+    "- Un 200 en una landing no es paywall. No se marca mainnet.",
     "",
     "## Taxonomía LatAm",
     "",
@@ -375,9 +432,9 @@ function renderLlmsTxt({ updatedAt, apis }) {
     "## Notas",
     "",
     "- No hace falta autenticación para leer los datos.",
-    "- Los campos `price_display`, `network`, `url`, `endpoint_url` pueden venir en `null`.",
+    "- Los campos `price_display`, `network`, `url`, `endpoint_url` pueden venir en `null`. `network`/`asset`/`amount`/`pay_to` post-probe salen del 402; no se inventan.",
     "- El campo `protocol` identifica el rail de pago (hoy siempre `x402`).",
-    "- `callable` se actualiza con `npm run probe` (batch) o `npm run fetch-ar-agent` (first-party AR).",
+    "- `callable` se actualiza con `npm run probe` (batch) o `npm run fetch-ar-agent` (first-party AR). Valores: mainnet | testnet | dead | incomplete.",
     "- Orden de release: probe (o fetch-ar-agent) → `npm run build` → deploy del `public/`.",
     "- Las APIs first-party de AR (ar-agent-fx.mswitach.workers.dev) se actualizan con `npm run fetch-ar-agent`.",
     "- Submit de sellers y probe on-demand: `POST` local en :3402 (`/api/submit`, `/api/probe`).",
@@ -443,9 +500,16 @@ function build() {
     writeFileSync(join(dir, "index.html"), renderDetail(api));
   }
 
+  const callableCounts = countable(data.apis);
   writeJson(join(OUT, "api", "apis.json"), {
     updated_at: data.updatedAt,
     count: publicApis.length,
+    callable_counts: callableCounts,
+    discovery: {
+      href: `${BASE_PATH}/discovery/resources`,
+      filter: "mainnet",
+      note: "/discovery/resources y resources.json son un subset mainnet-only. Este dump incluye todas las filas con callable honesto.",
+    },
     apis: publicApis,
   });
   writeFileSync(join(OUT, "api", "apis.ndjson"), publicApis.map((a) => JSON.stringify(a)).join("\n") + "\n");
@@ -470,6 +534,7 @@ function build() {
 
   console.log(`Build OK: ${data.apis.length} APIs → ${OUT}`);
   console.log(`  ${SITE_NAME} @ ${SITE_URL}`);
+  console.log(`  discovery mainnet: ${catalog.count} · dump: ${publicApis.length} (mainnet ${callableCounts.mainnet} / testnet ${callableCounts.testnet} / dead ${callableCounts.dead} / incomplete ${callableCounts.incomplete})`);
   console.log("  estático: /.well-known/x402.json /discovery/resources /openapi.json /mcp/manifest.json /llms.txt");
 }
 

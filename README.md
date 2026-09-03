@@ -23,11 +23,11 @@ Sitio publicado (estático):
 
 Incluye:
 
-- **Probing**: cada API tiene `callable: "live" | "dead" | "unchecked"` basado en GET al path concreto (402 o 200 = live).
+- **Probing honesto**: cada API tiene `callable: "mainnet" | "testnet" | "dead" | "incomplete"` según el 402 real (red CAIP-2, asset, amount, payTo). Un 200 de landing no es paywall.
 - **Taxonomía LatAm**: tags Unicode OK como `fx.ar.blue`, `bcra.deudores`, `afip.cuit`, `infoleg.search`.
 - **Listings first-party AR**: 12 endpoints del worker `ar-agent-fx.mswitach.workers.dev`.
 - **MCP en español (descripción)**: `buscar_servicios`, `obtener_servicio`, `llamar_servicio`. El proxy en vivo es **solo local**. En el host estático el agente paga el seller.
-- **Discovery Bazaar-compatible (estático)**: `GET /discovery/resources`, `/.well-known/x402.json`, `/openapi.json`.
+- **Discovery Bazaar-compatible (estático, solo mainnet)**: `GET /discovery/resources` y `/.well-known/x402.json` no anuncian testnet como inventario settleable. `/api/apis.json` es el dump completo.
 - **Seller submit / probe on-demand**: solo Express local (`npm run dev` :3402). No hay serverless de submit.
 
 **Lo que NO es:**
@@ -46,7 +46,7 @@ Incluye:
 ```
 data/apis.json          → fuente de verdad: array de APIs con campos marketplace
 scripts/build.mjs       → genera public/ (HTML + JSON + discovery estático + llms.txt)
-scripts/probe.mjs       → batch probe (actualiza callable). `--only=ar-agent` para first-party
+scripts/probe.mjs       → batch probe (mainnet|testnet|dead|incomplete). `--only=ar-agent` para first-party
 scripts/fetch-ar-agent.mjs → actualiza paths + probea los 12 listings AR
 scripts/enrich-taxonomy.mjs → taxonomía LatAm a APIs existentes
 server/index.mjs        → Express local :3402 (submit / probe / MCP POST / search)
@@ -69,10 +69,10 @@ El host estático no probea. El callable se commitea en `data/apis.json`.
 ```bash
 npm install
 
-# First-party AR (paths + callable honestos)
+# First-party AR (paths; Sepolia = testnet, nunca mainnet)
 npm run fetch-ar-agent
 
-# Opcional: batch del resto del catálogo
+# Batch de todo el catálogo (recomendado antes de un release)
 npm run probe
 # Solo AR, si no corriste fetch-ar-agent:
 npm run probe -- --only=ar-agent
@@ -110,13 +110,13 @@ En **producción** (Pages / Vercel) solo existen archivos estáticos. No hay Exp
 | Ruta | Qué es |
 |---|---|
 | `GET /.well-known/x402.json` | Manifest LupaPlaza + links de discovery |
-| `GET /discovery/resources` | Catálogo Bazaar-shaped (archivo sin extensión) |
-| `GET /discovery/resources.json` | El mismo JSON, con extensión (hosts que la piden) |
-| `GET /api/apis.json` | Dump honesto del catálogo (misma fuente) |
+| `GET /discovery/resources` | Catálogo Bazaar-shaped **solo mainnet** (archivo sin extensión) |
+| `GET /discovery/resources.json` | El mismo feed mainnet, con extensión |
+| `GET /api/apis.json` | Dump completo con `callable` honesto. Discovery es un subset mainnet. |
 | `GET /api/apis.ndjson` | Un objeto por línea |
 | `GET /openapi.json` | OpenAPI 3.1 (`info.title`: LupaPlaza) |
 | `GET /llms.txt` | Guía para LLMs |
-| `GET /mcp/manifest.json` | Tres tools + cómo pagar al seller. **No hay MCP pay-through público.** |
+| `GET /mcp/manifest.json` | Tres tools. Agentes descubren mainnet vía `/discovery/resources`. Testnet es para humanos/local. |
 
 URLs concretas después del merge (GitHub Pages):
 
@@ -151,16 +151,19 @@ Si Vercel está conectado al repo, las mismas rutas viven en la raíz del domini
 | `category` | string | texto libre, se separa por `/` para chips |
 | `description` | string | |
 | `price_display` | string | texto de precio tal cual |
-| `network` | string \| null | red de pago |
+| `network` | string \| null | CAIP-2 parseado del 402 (p. ej. `eip155:8453`). `null` si el challenge no declara red — no se inventa |
+| `asset` | string \| null | contrato USDC o símbolo si el 402 lo declara |
+| `amount` | string \| null | atomic o display si el 402 lo declara |
 | `protocol` | string | `"x402"` |
 | `url` | string \| null | sitio oficial |
 | `endpoint_url` | string \| null | endpoint base x402 |
-| `pay_to` | string \| null | address de pago |
+| `pay_to` | string \| null | address de pago (del 402 si existe) |
 | `source_url` | string | de dónde se detectó |
 | `date_detected` | string (YYYY-MM-DD) | nunca se pisa |
 | `date_updated` | string (YYYY-MM-DD) | se actualiza si cambió algo |
 | `status` | string | `"active"` |
-| **`callable`** | `"live" \| "dead" \| "unchecked"` | `npm run probe` / `fetch-ar-agent` |
+| **`callable`** | `"mainnet" \| "testnet" \| "dead" \| "incomplete"` | `npm run probe` / `fetch-ar-agent` |
+| **`is_402`** | boolean | `true` solo si el último probe fue HTTP 402 |
 | **`last_probed_at`** | string (ISO 8601) \| null | timestamp del último probe |
 | **`http_status`** | number \| null | código HTTP del último probe |
 | **`taxonomy`** | string[] | tags LatAm |
@@ -193,11 +196,12 @@ Genéricas (las 21 originales): `web.scraping`, `automation`, `browser`, `search
 
 ## Callable status
 
-- **`live`**: el path concreto respondió 402 (pago) o 2xx/3xx en el último probe.
-- **`dead`**: no respondió, 4xx/5xx, o timeout. Un first-party muerto se marca `dead` — no se esconde.
-- **`unchecked`**: aún no se probó (recién agregada o sin URL).
+- **`mainnet`**: 402 live en una red mainnet evidenciada (p. ej. `eip155:8453`, Solana mainnet). Esto es lo que publica `/discovery/resources`.
+- **`testnet`**: 402 live en testnet (`eip155:84532` Base Sepolia, Solana Devnet, etc.). **Todos los listings `ar-agent-*` de Sepolia son testnet, nunca mainnet.** No se presentan como USDC de producción.
+- **`dead`**: inalcanzable, no-402 cuando se esperaba paywall, o fallo claro. Un 200 de marketing no es paywall.
+- **`incomplete`**: hubo 402 pero faltan `network` / `asset` / `amount` / `payTo` para pagar. Si el 402 no declara red, `network` queda `null`.
 
-`npm run probe` sondea el primer `endpoints[].path` si existe (placeholders `{year}`, `{cuit}`, `{id}` se rellenan solo para el GET de probe). Si no hay path, cae al `endpoint_url`.
+`npm run probe` sondea **cada** `endpoints[].path` (placeholders `{year}`, `{cuit}`, `{id}` se rellenan solo para el GET). Si no hay path, cae al `endpoint_url`. Parsea `PAYMENT-REQUIRED` (v2, base64) o el body JSON (v1). No inventa redes.
 
 ---
 
@@ -220,15 +224,15 @@ Genéricas (las 21 originales): `web.scraping`, `automation`, `browser`, `search
 | `/v1/legal/search` | Búsqueda InfoLEG | $0.005 | `infoleg.search` |
 | `/v1/legal/norma/{id}` | Texto de norma InfoLEG | $0.01 | `infoleg.norma` |
 
-- **PAY_TO**: `0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F`
-- **Red**: Base Sepolia (`eip155:84532`)
-- **Gratis**: `/health`, `/.well-known/x402.json`, `/llms.txt`, `/openapi.json`
+- **PAY_TO**: `0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F` (si el 402 lo declara)
+- **Red**: Base Sepolia (`eip155:84532`) — **testnet**, no inventario mainnet
+- **Gratis**: `/health`, `/.well-known/x402.json`, `/llms.txt`, `/openapi.json` (no son paywall)
 
 ```bash
 npm run fetch-ar-agent
 ```
 
-Si un path first-party no responde 402/2xx, queda `callable: "dead"`. No se marca live por un `/health` 200 del worker.
+Si un path first-party responde 402 completo en Sepolia, queda `callable: "testnet"`. Si no hay 402 o faltan campos, `dead` / `incomplete`. Un `/health` 200 del worker no marca nada como pagable.
 
 ---
 
@@ -253,7 +257,7 @@ Si un path first-party no responde 402/2xx, queda `callable: "dead"`. No se marc
 ## Mantenimiento
 
 - `data/apis.json`: fuente de verdad.
-- `npm run fetch-ar-agent` / `npm run probe`: actualizan `callable` ( commitear antes del build de release ).
+- `npm run fetch-ar-agent` / `npm run probe`: actualizan `callable` + campos de probe (commitear antes del build de release).
 - `npm run build`: regenera `public/` (HTML, JSON, discovery, llms.txt, sitemap).
 - Push a `main` → Pages + Vercel sirven el estático.
 

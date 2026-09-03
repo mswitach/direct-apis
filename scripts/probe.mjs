@@ -1,11 +1,19 @@
 #!/usr/bin/env node
-// Probe batch de todas las APIs con endpoint_url definido
-// Verifica /.well-known/x402.json y hace un challenge 402 simple
+// Probe honesto de todas las APIs (y cada endpoint concreto).
+// GET/HEAD del URL pagable; parsea PAYMENT-REQUIRED / body x402.
+// callable ∈ {mainnet, testnet, dead, incomplete}. No inventa redes.
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { resolveProbeUrl } from "./lib/probe-url.mjs";
+import {
+  CALLABLE,
+  applyProbeToListing,
+  emptyProbeResult,
+  isArAgentListing,
+  probeTarget,
+  resolveProbeTargets,
+} from "./lib/probe-url.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -16,66 +24,36 @@ function parseOnlyPrefix() {
   return flag ? flag.slice("--only=".length) : null;
 }
 
-async function probeEndpoint(api) {
-  const probeUrl = resolveProbeUrl(api);
-  if (!probeUrl) {
-    return { callable: "unchecked", http_status: null, error: "No URL disponible" };
-  }
-
-  try {
-    // GET al path concreto si existe (no el root): 402 o 200 = live.
-    const response = await fetch(probeUrl, {
-      method: "GET",
-      headers: { "User-Agent": "LupaPlaza-Probe/2.0" },
-      signal: AbortSignal.timeout(10000) // 10s timeout
-    });
-
-    const status = response.status;
-
-    // 402 = live (requiere pago)
-    if (status === 402) {
-      return { callable: "live", http_status: 402, error: null };
-    }
-
-    // 200 = live (tier gratis o sin paywall)
-    if (status === 200) {
-      return { callable: "live", http_status: 200, error: null };
-    }
-
-    // Otros códigos 2xx/3xx
-    if (status >= 200 && status < 400) {
-      return { callable: "live", http_status: status, error: null };
-    }
-
-    // 4xx/5xx = dead
-    return { callable: "dead", http_status: status, error: `HTTP ${status}` };
-
-  } catch (error) {
-    // Network error, timeout, etc = dead
-    return { 
-      callable: "dead", 
-      http_status: null, 
-      error: error.message 
-    };
+function badge(callable) {
+  switch (callable) {
+    case CALLABLE.MAINNET:
+      return "✅ mainnet";
+    case CALLABLE.TESTNET:
+      return "🧪 testnet";
+    case CALLABLE.INCOMPLETE:
+      return "⚠️  incomplete";
+    default:
+      return "❌ dead";
   }
 }
 
-async function probeWellKnown(baseUrl) {
-  try {
-    const url = new URL("/.well-known/x402.json", baseUrl).toString();
-    const response = await fetch(url, {
-      method: "GET",
-      signal: AbortSignal.timeout(5000)
-    });
+async function probeApi(api) {
+  const forceTestnet = isArAgentListing(api);
+  const targets = resolveProbeTargets(api);
 
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    }
-  } catch {
-    // Well-known no disponible
+  if (targets.length === 0) {
+    const empty = emptyProbeResult({ error: "No URL disponible" });
+    return applyProbeToListing(api, [empty]);
   }
-  return null;
+
+  const results = [];
+  for (const target of targets) {
+    const result = await probeTarget(target, { forceTestnet });
+    results.push(result);
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+
+  return applyProbeToListing(api, results);
 }
 
 async function probe() {
@@ -91,67 +69,43 @@ async function probe() {
     process.exit(1);
   }
 
-  console.log(`🔍 Probing ${targets.length} APIs${onlyPrefix ? ` (filtro --only=${onlyPrefix})` : ""}...`);
+  console.log(`🔍 Probing ${targets.length} listings${onlyPrefix ? ` (filtro --only=${onlyPrefix})` : ""}...`);
 
-  let probed = 0;
-  let live = 0;
-  let dead = 0;
-  let unchecked = 0;
+  const counts = { mainnet: 0, testnet: 0, dead: 0, incomplete: 0 };
 
-  for (const api of targets) {
-    if (!api.endpoint_url && !api.url) {
-      console.log(`⏭️  ${api.name}: sin URL, saltando`);
-      api.callable = "unchecked";
-      unchecked++;
-      continue;
-    }
+  for (let i = 0; i < data.apis.length; i++) {
+    const api = data.apis[i];
+    if (onlyPrefix && !(api.id && api.id.startsWith(onlyPrefix))) continue;
 
     console.log(`   Probing ${api.name}...`);
-    
-    // Probe endpoint
-    const result = await probeEndpoint(api);
-    api.callable = result.callable;
-    api.http_status = result.http_status;
-    api.last_probed_at = new Date().toISOString();
-    
-    if (result.callable === "live") {
-      console.log(`   ✅ ${api.name}: live (HTTP ${result.http_status})`);
-      live++;
-    } else if (result.callable === "dead") {
-      console.log(`   ❌ ${api.name}: dead (${result.error})`);
-      dead++;
-    } else {
-      console.log(`   ⏭️  ${api.name}: unchecked`);
-      unchecked++;
-    }
+    const updated = await probeApi(api);
+    data.apis[i] = updated;
+    counts[updated.callable] = (counts[updated.callable] || 0) + 1;
 
-    // Probe well-known (opcional, no bloquea)
-    if (api.url || api.endpoint_url) {
-      const wellKnown = await probeWellKnown(api.endpoint_url || api.url);
-      if (wellKnown) {
-        console.log(`      📄 Well-known encontrado: ${wellKnown.name || "sin nombre"}`);
-        // Podríamos actualizar api.endpoints, api.extensions, etc. desde well-known
-      }
-    }
+    const extra = updated.is_402
+      ? `402 ${updated.network || "network?"} ${updated.asset || "asset?"} ${updated.amount || "amount?"} ${updated.pay_to || "payTo?"}`
+      : updated.http_status != null
+        ? `HTTP ${updated.http_status}`
+        : updated.last_probed_at
+          ? "unreachable"
+          : "no url";
+    console.log(`   ${badge(updated.callable)} ${api.name}: ${extra}`);
 
-    probed++;
-    
-    // Rate limit: espera 500ms entre probes
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 300));
   }
 
-  // Actualiza updated_at
   data.updated_at = new Date().toISOString().split("T")[0];
-
-  // Guarda
   writeFileSync(DATA_FILE, JSON.stringify(data, null, 2) + "\n");
 
   console.log(`\n✅ Probe completo:`);
-  console.log(`   ${probed} probed`);
-  console.log(`   ${live} live`);
-  console.log(`   ${dead} dead`);
-  console.log(`   ${unchecked} unchecked`);
-  console.log(`\ndata/apis.json actualizado con callable status.`);
+  console.log(`   mainnet     ${counts.mainnet}`);
+  console.log(`   testnet     ${counts.testnet}`);
+  console.log(`   dead        ${counts.dead}`);
+  console.log(`   incomplete  ${counts.incomplete}`);
+  console.log(`\ndata/apis.json actualizado.`);
 }
 
-probe().catch(console.error);
+probe().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

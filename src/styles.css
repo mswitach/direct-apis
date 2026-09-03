@@ -215,32 +215,74 @@ select, .btn-ghost, .btn-primary {
   text-transform: uppercase;
 }
 .badge-callable {
-  font-size: 0.9rem;
-  padding: 0.1em 0.3em;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.25em 0.55em;
   border-radius: 999px;
-  background: transparent;
-  border: none;
 }
 .status-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-size: 0.9rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
   padding: 0.25em 0.6em;
   border-radius: 999px;
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
 }
+.status-mainnet,
 .status-live {
   background: var(--accent2-soft);
   color: var(--accent2);
+}
+.status-testnet {
+  background: #f3e3b3;
+  color: #7a4e00;
 }
 .status-dead {
   background: rgba(255,0,0,0.1);
   color: #c44;
 }
+.status-incomplete,
 .status-unchecked {
   background: var(--surface-2);
   color: var(--ink-dim);
+  border: 1px dashed var(--line);
+}
+.card-warn {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #7a4e00;
+  background: #f3e3b3;
+  padding: 0.35em 0.55em;
+  border-radius: var(--radius);
+}
+.card-probe {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 0.7rem;
+  color: var(--ink-dim);
+}
+.probe-402 { color: var(--accent2); }
+.probe-http { color: var(--ink-dim); }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .status-testnet,
+  :root:not([data-theme="light"]) .card-warn {
+    background: #3a2e12;
+    color: #e6c36a;
+  }
+}
+:root[data-theme="dark"] .status-testnet,
+:root[data-theme="dark"] .card-warn {
+  background: #3a2e12;
+  color: #e6c36a;
 }
 .card-badges {
   display: flex;
