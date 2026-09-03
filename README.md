@@ -1,28 +1,43 @@
-# Marketplace 402
+# LupaPlaza
 
 **Catálogo chico y confiable de APIs LatAm pagables por uso vía x402.**
 
+Producto: **LupaPlaza**. Código en [marketplace-402](https://github.com/mswitach/marketplace-402) — el slug del repo no cambia.
+
 Cada endpoint se prueba (probe) para saber si está vivo. Con taxonomía regional: `fx.ar.casa`, `bcra.deudores`, `afip.cuit`, `infoleg.norma`, `feriados.ar`, y más. Para agentes que descubren y pagan con x402. Para personas que buscan APIs honestas sin wash.
+
+Sitio publicado (estático):
+
+- GitHub Pages: https://mswitach.github.io/marketplace-402/
+- Vercel (si el proyecto está conectado): raíz del deploy, `outputDirectory: public`
 
 ---
 
 ## Qué es
 
-**Marketplace 402** es la evolución del _x402 Index_. Ya no es un directorio estático: ahora es un marketplace con:
+**LupaPlaza** es la evolución de Marketplace 402 / _x402 Index_. Sigue siendo el mismo pipeline (catálogo en `data/apis.json` → `npm run build` → `public/`). Lo que cambió en este corte:
 
-- ✅ **Probing en vivo**: cada API tiene `callable: "live" | "dead" | "unchecked"` basado en pruebas HTTP 402.
-- 🌎 **Taxonomía LatAm**: tags Unicode OK como `fx.ar.blue`, `bcra.deudores`, `afip.cuit`, `infoleg.search`.
-- 🇦🇷 **Listings first-party argentinas**: 12 endpoints del worker `ar-agent-fx.mswitach.workers.dev` (dólar oficial, blue, MEP, CCL, cripto, mayorista, tarjeta; BCRA deudores; AFIP CUIT; feriados; InfoLEG).
-- 🛠️ **MCP en español**: herramientas `buscar_servicios`, `obtener_servicio`, `llamar_servicio` para agentes.
-- 🔍 **Discovery Bazaar-compatible**: `GET /discovery/resources`, `/.well-known/x402.json`, `/openapi.json`.
-- 📊 **Faceted search**: búsqueda por query, categoría, país, callable, taxonomía.
-- 📝 **Seller submit**: endpoint `/api/submit` para que sellers envíen sus APIs (probe automático antes de agregar).
+- Nombre visible: LupaPlaza.
+- Discovery para agentes **generado en build time** y servido como archivos estáticos. Vercel y GitHub Pages no corren Express.
+- ~33 listings (21 curadas + 12 first-party `ar-agent-fx`). Sin wash, sin dump de 15k del Bazaar.
+
+Incluye:
+
+- **Probing**: cada API tiene `callable: "live" | "dead" | "unchecked"` basado en GET al path concreto (402 o 200 = live).
+- **Taxonomía LatAm**: tags Unicode OK como `fx.ar.blue`, `bcra.deudores`, `afip.cuit`, `infoleg.search`.
+- **Listings first-party AR**: 12 endpoints del worker `ar-agent-fx.mswitach.workers.dev`.
+- **MCP en español (descripción)**: `buscar_servicios`, `obtener_servicio`, `llamar_servicio`. El proxy en vivo es **solo local**. En el host estático el agente paga el seller.
+- **Discovery Bazaar-compatible (estático)**: `GET /discovery/resources`, `/.well-known/x402.json`, `/openapi.json`.
+- **Seller submit / probe on-demand**: solo Express local (`npm run dev` :3402). No hay serverless de submit.
 
 **Lo que NO es:**
-- ❌ No somos Coinbase Bazaar. No listamos 15k servicios (muchos muertos o wash).
-- ❌ No somos CDP. No ingesta masiva.
-- ❌ No somos un facilitador genérico. No hacemos escrow, no ramp ARS, no wallet.
-- ❌ No proxeamos AI/Firecrawl genéricos.
+
+- No somos Coinbase Bazaar. No listamos 15k servicios (muchos muertos o wash).
+- No somos un directorio de protocolos (nada de LupaRiel ni research de rails).
+- No somos CDP. No hay ingesta masiva.
+- No somos un facilitador genérico. No hacemos escrow, no ramp ARS, no wallet.
+- No hay Express en Fly/Railway. Decisión 28 Ago: servidor local-only.
+- No hay dominio custom en este corte.
 
 ---
 
@@ -30,81 +45,100 @@ Cada endpoint se prueba (probe) para saber si está vivo. Con taxonomía regiona
 
 ```
 data/apis.json          → fuente de verdad: array de APIs con campos marketplace
-scripts/build.mjs       → genera public/ completo (HTML + JSON + llms.txt + sitemap)
-scripts/probe.mjs       → batch probe de todos los endpoints (actualiza callable status)
-scripts/fetch-ar-agent.mjs → fetcher para ar-agent-fx worker (agrega/actualiza first-party AR listings)
-scripts/enrich-taxonomy.mjs → agrega taxonomía LatAm a APIs existentes
-server/index.mjs        → servidor ligero Express para rutas dinámicas
-server/routes/discovery.mjs → /discovery/resources, Bazaar-compatible
+scripts/build.mjs       → genera public/ (HTML + JSON + discovery estático + llms.txt)
+scripts/probe.mjs       → batch probe (actualiza callable). `--only=ar-agent` para first-party
+scripts/fetch-ar-agent.mjs → actualiza paths + probea los 12 listings AR
+scripts/enrich-taxonomy.mjs → taxonomía LatAm a APIs existentes
+server/index.mjs        → Express local :3402 (submit / probe / MCP POST / search)
+server/routes/discovery.mjs → /discovery/resources (misma forma que el estático)
 server/routes/mcp.mjs   → /mcp, herramientas MCP en español
-server/routes/api.mjs   → /api/search, /api/submit, /api/probe
+server/routes/api.mjs   → /api/search, /api/submit, /api/probe (local)
 src/styles.css          → estilos del sitio
 src/app.js              → filtro/orden client-side (progressive enhancement)
+src/openapi.json        → spec; el build la copia con title LupaPlaza y servers
 ```
 
 ---
 
 ## Uso
 
+### Release (probe → build)
+
+El host estático no probea. El callable se commitea en `data/apis.json`.
+
+```bash
+npm install
+
+# First-party AR (paths + callable honestos)
+npm run fetch-ar-agent
+
+# Opcional: batch del resto del catálogo
+npm run probe
+# Solo AR, si no corriste fetch-ar-agent:
+npm run probe -- --only=ar-agent
+
+# Genera public/ (HTML + discovery estático)
+npm run build
+```
+
+Commit de `data/apis.json` + código → push a `main` → GitHub Pages (`deploy.yml`) y Vercel (`vercel.json`) redeployan el `public/`.
+
 ### Desarrollo local
 
 ```bash
-# Instalar (solo Express, sin deps pesadas)
-npm install
-
-# Generar sitio estático
 npm run build
-
-# Correr servidor (sirve public/ + rutas dinámicas)
 npm run dev
 # → http://localhost:3402
+# Express sirve public/ y además /api/search, /api/submit, /api/probe, POST /mcp/*
 ```
 
 ### Scripts de mantenimiento
 
 ```bash
-# Probe batch de todos los endpoints (actualiza callable)
-npm run probe
-
-# Fetch y actualiza endpoints de ar-agent-fx worker
+npm run probe                 # todas las APIs con URL
+npm run probe -- --only=ar-agent
 npm run fetch-ar-agent
-
-# Ingest de research diario (como antes)
 npm run ingest ruta/al/archivo.md
 ```
-
-### Deploy
-
-El sitio productivo vive en **Vercel**:
-- `vercel.json` define `buildCommand: "npm run build"` → genera `public/`
-- Vercel NO corre el servidor Node (solo build estático)
-- Para rutas dinámicas (`/discovery`, `/mcp`, `/api`), usar Vercel Serverless Functions (pendiente) o deploy del servidor en otro lugar (Render, Fly.io, Railway)
-
-**Alternativa simple para MVP:** mantener las rutas dinámicas como archivos JSON estáticos generados en build time (no real-time, pero funciona sin servidor).
 
 ---
 
 ## Rutas para agentes
 
-### Discovery
+En **producción** (Pages / Vercel) solo existen archivos estáticos. No hay Express.
 
-- `GET /.well-known/x402.json` → metadatos del marketplace
-- `GET /discovery/resources` → catálogo completo (Bazaar-compatible)
-- `GET /api/search?q=...&category=...&country=...&callable=...&taxonomy=...&sort=...` → búsqueda con facetas
-- `GET /openapi.json` → OpenAPI 3.1 spec
+| Ruta | Qué es |
+|---|---|
+| `GET /.well-known/x402.json` | Manifest LupaPlaza + links de discovery |
+| `GET /discovery/resources` | Catálogo Bazaar-shaped (archivo sin extensión) |
+| `GET /discovery/resources.json` | El mismo JSON, con extensión (hosts que la piden) |
+| `GET /api/apis.json` | Dump honesto del catálogo (misma fuente) |
+| `GET /api/apis.ndjson` | Un objeto por línea |
+| `GET /openapi.json` | OpenAPI 3.1 (`info.title`: LupaPlaza) |
+| `GET /llms.txt` | Guía para LLMs |
+| `GET /mcp/manifest.json` | Tres tools + cómo pagar al seller. **No hay MCP pay-through público.** |
 
-### MCP (español)
+URLs concretas después del merge (GitHub Pages):
 
-- `GET /mcp` → manifest de herramientas
-- `POST /mcp/buscar_servicios` → busca APIs (gratis)
-- `POST /mcp/obtener_servicio` → detalles de una API (gratis)
-- `POST /mcp/llamar_servicio` → pass-through x402 (paga al proveedor, no al marketplace)
+- https://mswitach.github.io/marketplace-402/
+- https://mswitach.github.io/marketplace-402/.well-known/x402.json
+- https://mswitach.github.io/marketplace-402/discovery/resources
+- https://mswitach.github.io/marketplace-402/discovery/resources.json
+- https://mswitach.github.io/marketplace-402/openapi.json
+- https://mswitach.github.io/marketplace-402/llms.txt
+- https://mswitach.github.io/marketplace-402/mcp/manifest.json
+- https://mswitach.github.io/marketplace-402/api/apis.json
 
-### Datos descargables
+Si Vercel está conectado al repo, las mismas rutas viven en la raíz del dominio de Vercel (sin el prefijo `/marketplace-402`).
 
-- `/api/apis.json` → dataset completo
-- `/api/apis.ndjson` → un objeto JSON por línea
-- `/llms.txt` → guía para LLMs
+### Solo local (`npm run dev` :3402)
+
+- `GET /api/search?q=...&category=...&country=...&callable=...&taxonomy=...` — facetas
+- `POST /api/submit` — seller submit (MVP: no escribe el catálogo)
+- `POST /api/probe` — probe on-demand (MVP: apunta a `scripts/probe.mjs`)
+- `GET /mcp` y `POST /mcp/buscar_servicios` / `obtener_servicio` / `llamar_servicio`
+
+`llamar_servicio` **no** es un pay-through público. En local devuelve instrucciones; el agente paga el `endpoint_url` del listing.
 
 ---
 
@@ -126,14 +160,14 @@ El sitio productivo vive en **Vercel**:
 | `date_detected` | string (YYYY-MM-DD) | nunca se pisa |
 | `date_updated` | string (YYYY-MM-DD) | se actualiza si cambió algo |
 | `status` | string | `"active"` |
-| **`callable`** | `"live" \| "dead" \| "unchecked"` | actualizado por `npm run probe` |
+| **`callable`** | `"live" \| "dead" \| "unchecked"` | `npm run probe` / `fetch-ar-agent` |
 | **`last_probed_at`** | string (ISO 8601) \| null | timestamp del último probe |
 | **`http_status`** | number \| null | código HTTP del último probe |
-| **`taxonomy`** | string[] | tags LatAm: `fx.ar.blue`, `bcra.deudores`, etc. |
-| **`country`** | string[] \| null | códigos ISO: `["AR"]`, `["MX"]`, etc. |
-| **`extensions`** | string[] | detectadas: `siwx`, `offer-receipt`, `x402r`, `signable` |
+| **`taxonomy`** | string[] | tags LatAm |
+| **`country`** | string[] \| null | códigos ISO |
+| **`extensions`** | string[] | `siwx`, `offer-receipt`, `x402r`, `signable` |
 | **`is_free_tier`** | boolean | `true` si no tiene paywall |
-| **`endpoints`** | array | lista de endpoints con path, method, description, price |
+| **`endpoints`** | array | path, method, description, price |
 
 ---
 
@@ -146,49 +180,42 @@ Unicode OK (Bazaar solo acepta ASCII):
   - `bcra.deudores`, `afip.cuit`
   - `infoleg.norma`, `infoleg.search`
   - `feriados.ar`
-  
-- **AML/Compliance regional**:
-  - `aml.ar`, `aml.co`, `aml.br`, `aml.mx`, `aml.cl`, `aml.pe`
-  
-- **Registros empresariales**:
-  - `registro.ar` (AFIP CUIT)
-  - `registro.rues` (Colombia)
-  - `registro.cnpj` (Brasil)
-  - `registro.rfc` (México)
 
-- **PSP fees**:
-  - `fees.psp.ar` (fees de pasarelas argentinas)
+- **AML/Compliance regional**: `aml.ar`, `aml.co`, `aml.br`, `aml.mx`, `aml.cl`, `aml.pe`
 
-Genéricas (mantener para las 21 APIs originales):
-- `web.scraping`, `automation`, `browser`, `search.web`, `ai`, `llm`, `inference`, `blockchain`, `datos.onchain`, `clima`, `weather`, `legal`, `compliance`, `seguridad`, `security`, `salud`, `health`, `finanzas`, `cripto`, `utilidades`, `email`, `infraestructura`, `explorer`, etc.
+- **Registros empresariales**: `registro.ar`, `registro.rues`, `registro.cnpj`, `registro.rfc`
+
+- **PSP fees**: `fees.psp.ar`
+
+Genéricas (las 21 originales): `web.scraping`, `automation`, `browser`, `search.web`, `ai`, `llm`, `inference`, `blockchain`, `datos.onchain`, `clima`, `weather`, `legal`, `compliance`, `seguridad`, `security`, `salud`, `health`, `finanzas`, `cripto`, `utilidades`, `email`, `infraestructura`, `explorer`, etc.
 
 ---
 
 ## Callable status
 
-- **`live`**: el endpoint respondió 402 (requiere pago) o 200 (tier gratis) en el último probe.
-- **`dead`**: el endpoint no respondió, devolvió 4xx/5xx, o timeout.
-- **`unchecked`**: aún no se probó (recién agregada o sin `endpoint_url`).
+- **`live`**: el path concreto respondió 402 (pago) o 2xx/3xx en el último probe.
+- **`dead`**: no respondió, 4xx/5xx, o timeout. Un first-party muerto se marca `dead` — no se esconde.
+- **`unchecked`**: aún no se probó (recién agregada o sin URL).
 
-El probe corre con `npm run probe` (batch de todas las APIs con `endpoint_url` definido).
+`npm run probe` sondea el primer `endpoints[].path` si existe (placeholders `{year}`, `{cuit}`, `{id}` se rellenan solo para el GET de probe). Si no hay path, cae al `endpoint_url`.
 
 ---
 
 ## First-party AR listings
 
-12 endpoints del worker `ar-agent-fx.mswitach.workers.dev`:
+12 endpoints del worker `ar-agent-fx.mswitach.workers.dev`. Paths alineados al well-known vivo del worker (ya no `/v1/fx/blue`; ahora `/v1/fx/usd/{casa}`).
 
 | Endpoint | Descripción | Precio | Taxonomy |
 |---|---|---|---|
-| `/v1/fx/usd` | Dólar oficial BCRA | $0.001 | `fx.ar.oficial` |
-| `/v1/fx/blue` | Dólar blue | $0.001 | `fx.ar.blue` |
-| `/v1/fx/bolsa` | Dólar MEP | $0.001 | `fx.ar.bolsa`, `fx.ar.mep` |
-| `/v1/fx/contadoconliqui` | Dólar CCL | $0.001 | `fx.ar.ccl` |
-| `/v1/fx/cripto` | Dólar cripto (USDT) | $0.001 | `fx.ar.cripto` |
-| `/v1/fx/mayorista` | Dólar mayorista | $0.001 | `fx.ar.mayorista` |
-| `/v1/fx/tarjeta` | Dólar tarjeta | $0.001 | `fx.ar.tarjeta` |
-| `/v1/bcra/deudores` | Central de Deudores BCRA | $0.01 | `bcra.deudores`, `aml.ar` |
-| `/v1/afip/cuit` | Consulta CUIT/CUIL AFIP | $0.01 | `afip.cuit`, `registro.ar` |
+| `/v1/fx/usd/oficial` | Dólar oficial BCRA | $0.001 | `fx.ar.oficial` |
+| `/v1/fx/usd/blue` | Dólar blue | $0.001 | `fx.ar.blue` |
+| `/v1/fx/usd/bolsa` | Dólar MEP | $0.001 | `fx.ar.bolsa`, `fx.ar.mep` |
+| `/v1/fx/usd/contadoconliqui` | Dólar CCL | $0.001 | `fx.ar.ccl` |
+| `/v1/fx/usd/cripto` | Dólar cripto (USDT) | $0.001 | `fx.ar.cripto` |
+| `/v1/fx/usd/mayorista` | Dólar mayorista | $0.001 | `fx.ar.mayorista` |
+| `/v1/fx/usd/tarjeta` | Dólar tarjeta | $0.001 | `fx.ar.tarjeta` |
+| `/v1/bcra/deudores/{cuit}` | Central de Deudores BCRA | $0.01 | `bcra.deudores`, `aml.ar` |
+| `/v1/cuit/{cuit}` | Validación CUIT + denominación BCRA (no padrón AFIP) | $0.01 | `afip.cuit`, `registro.ar` |
 | `/v1/feriados/{year}` | Feriados argentinos | $0.001 | `feriados.ar` |
 | `/v1/legal/search` | Búsqueda InfoLEG | $0.005 | `infoleg.search` |
 | `/v1/legal/norma/{id}` | Texto de norma InfoLEG | $0.01 | `infoleg.norma` |
@@ -197,57 +224,45 @@ El probe corre con `npm run probe` (batch de todas las APIs con `endpoint_url` d
 - **Red**: Base Sepolia (`eip155:84532`)
 - **Gratis**: `/health`, `/.well-known/x402.json`, `/llms.txt`, `/openapi.json`
 
-Estos endpoints se agregan/actualizan corriendo:
-
 ```bash
 npm run fetch-ar-agent
 ```
 
-Si el worker está caído, el script marca `callable: "unchecked"`. Si responde, `callable: "live"`.
+Si un path first-party no responde 402/2xx, queda `callable: "dead"`. No se marca live por un `/health` 200 del worker.
 
 ---
 
-## Seller submit (v1)
+## Seller submit (v1, local)
 
-`POST /api/submit` con `{ "url": "https://..." }` agrega una API nueva **para revisión**.
-
-En v1 (MVP), el endpoint retorna éxito pero NO agrega automáticamente a `data/apis.json`. En una implementación completa:
-1. Fetch a `URL/.well-known/x402.json`
-2. Challenge 402
-3. Parsear Bazaar extension si existe
-4. Agregar a `data/apis.json` con `callable: "unchecked"`
-
-Por ahora, agregar manualmente o hacer un script aparte.
+`POST http://localhost:3402/api/submit` con `{ "url": "https://..." }` recibe el envío. En v1 **no** agrega a `data/apis.json`. Agregar a mano o con un script.
 
 ---
 
-## Roadmap v2 (deferred)
+## Roadmap (fuera de este corte)
 
-No implementado en este MVP, pero anotado para futuro:
-
-- [ ] **Hold/x402r wired checkout**: agentes pagan con hold de fondos y liberación condicional.
-- [ ] **CDP Bazaar ingest**: traer listings del Bazaar (filtrados por calidad).
-- [ ] **0–1% take fee**: el marketplace cobra comisión pequeña (hoy 0%).
-- [ ] **FORTE paid-probe**: probamos un endpoint pagando la llamada real (hoy probe gratis GET esperando 402).
-- [ ] **Seller payout**: sistema de pagos a sellers (hoy pass-through directo).
-- [ ] **Extensions detectadas**: parsear well-known para detectar `siwx`, `offer-receipt`, `x402r`, `signable`.
-- [ ] **Vercel Serverless Functions**: para `/discovery`, `/mcp`, `/api` en Vercel (hoy solo build estático).
+- Hold/x402r wired checkout
+- CDP Bazaar ingest filtrado (no el dump de 15k)
+- 0–1% take fee
+- FORTE paid-probe
+- Seller payout
+- Extensiones parseadas del well-known
+- Express público o serverless de submit — **no** en este launch
 
 ---
 
 ## Mantenimiento
 
-- `data/apis.json`: fuente de verdad, editarla a mano o con scripts.
-- `npm run probe`: actualiza `callable` status (correr 1x/día o on-demand).
-- `npm run fetch-ar-agent`: actualiza endpoints first-party AR (correr cuando el worker cambie).
-- `npm run build`: regenera `public/` (HTML, JSON, llms.txt, sitemap).
-- Commit y push → Vercel redeploya solo.
+- `data/apis.json`: fuente de verdad.
+- `npm run fetch-ar-agent` / `npm run probe`: actualizan `callable` ( commitear antes del build de release ).
+- `npm run build`: regenera `public/` (HTML, JSON, discovery, llms.txt, sitemap).
+- Push a `main` → Pages + Vercel sirven el estático.
 
 ---
 
 ## Contacto
 
 **Owner**: Marcelo Switach  
+**Producto**: LupaPlaza  
 **Repo**: [github.com/mswitach/marketplace-402](https://github.com/mswitach/marketplace-402)  
 **x402 protocol**: [x402.org](https://www.x402.org/)
 

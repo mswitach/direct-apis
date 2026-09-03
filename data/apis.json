@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-27",
+  "updated_at": "2026-09-03",
   "apis": [
     {
       "id": "apify",
@@ -513,7 +513,7 @@
       "id": "ar-agent-fx-usd",
       "name": "AR Agent FX – Dólar USD oficial",
       "category": "Finanzas / Tipo de cambio / Argentina",
-      "description": "Cotización del dólar estadounidense (USD) oficial del Banco Central de la República Argentina (BCRA).",
+      "description": "Cotización USD/ARS oficial (BCRA) vía /v1/fx/usd/oficial. El worker también expone el dump multi-casa en /v1/fx/usd.",
       "price_display": "$0.001",
       "network": "Base Sepolia (eip155:84532)",
       "protocol": "x402",
@@ -522,11 +522,11 @@
       "pay_to": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
       "source_url": "https://ar-agent-fx.mswitach.workers.dev",
       "date_detected": "2026-08-27",
-      "date_updated": "2026-08-27",
+      "date_updated": "2026-09-03",
       "status": "active",
       "callable": "live",
-      "last_probed_at": "2026-08-27T01:22:14.404Z",
-      "http_status": 200,
+      "last_probed_at": "2026-09-03T18:12:57.048Z",
+      "http_status": 402,
       "taxonomy": [
         "fx.ar.oficial"
       ],
@@ -537,9 +537,9 @@
       "is_free_tier": false,
       "endpoints": [
         {
-          "path": "/v1/fx/usd",
+          "path": "/v1/fx/usd/oficial",
           "method": "GET",
-          "description": "Cotización del dólar estadounidense (USD) oficial del Banco Central de la República Argentina (BCRA).",
+          "description": "Cotización USD/ARS oficial (BCRA) vía /v1/fx/usd/oficial. El worker también expone el dump multi-casa en /v1/fx/usd.",
           "price": "$0.001"
         }
       ]
@@ -557,11 +557,11 @@
       "pay_to": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
       "source_url": "https://ar-agent-fx.mswitach.workers.dev",
       "date_detected": "2026-08-27",
-      "date_updated": "2026-08-27",
+      "date_updated": "2026-09-03",
       "status": "active",
       "callable": "live",
-      "last_probed_at": "2026-08-27T01:22:14.405Z",
-      "http_status": 200,
+      "last_probed_at": "2026-09-03T18:12:57.264Z",
+      "http_status": 402,
       "taxonomy": [
         "fx.ar.blue"
       ],
@@ -572,7 +572,7 @@
       "is_free_tier": false,
       "endpoints": [
         {
-          "path": "/v1/fx/blue",
+          "path": "/v1/fx/usd/blue",
           "method": "GET",
           "description": "Cotización del dólar blue (mercado informal) en Argentina.",
           "price": "$0.001"
@@ -592,11 +592,11 @@
       "pay_to": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
       "source_url": "https://ar-agent-fx.mswitach.workers.dev",
       "date_detected": "2026-08-27",
-      "date_updated": "2026-08-27",
+      "date_updated": "2026-09-03",
       "status": "active",
       "callable": "live",
-      "last_probed_at": "2026-08-27T01:22:14.405Z",
-      "http_status": 200,
+      "last_probed_at": "2026-09-03T18:12:57.478Z",
+      "http_status": 402,
       "taxonomy": [
         "fx.ar.bolsa",
         "fx.ar.mep"
@@ -608,7 +608,7 @@
       "is_free_tier": false,
       "endpoints": [
         {
-          "path": "/v1/fx/bolsa",
+          "path": "/v1/fx/usd/bolsa",
           "method": "GET",
           "description": "Cotización del dólar MEP (Mercado Electrónico de Pagos) en Argentina.",
           "price": "$0.001"
@@ -628,11 +628,11 @@
       "pay_to": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
       "source_url": "https://ar-agent-fx.mswitach.workers.dev",
       "date_detected": "2026-08-27",
-      "date_updated": "2026-08-27",
+      "date_updated": "2026-09-03",
       "status": "active",
       "callable": "live",
-      "last_probed_at": "2026-08-27T01:22:14.405Z",
-      "http_status": 200,
+      "last_probed_at": "2026-09-03T18:12:57.692Z",
+      "http_status": 402,
       "taxonomy": [
         "fx.ar.ccl",
         "fx.ar.contadoconliqui"
@@ -644,7 +644,7 @@
       "is_free_tier": false,
       "endpoints": [
         {
-          "path": "/v1/fx/contadoconliqui",
+          "path": "/v1/fx/usd/contadoconliqui",
           "method": "GET",
           "description": "Cotización del dólar Contado con Liquidación (CCL) en Argentina.",
           "price": "$0.001"
@@ -664,11 +664,11 @@
       "pay_to": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
       "source_url": "https://ar-agent-fx.mswitach.workers.dev",
       "date_detected": "2026-08-27",
-      "date_updated": "2026-08-27",
+      "date_updated": "2026-09-03",
       "status": "active",
       "callable": "live",
-      "last_probed_at": "2026-08-27T01:22:14.405Z",
-      "http_status": 200,
+      "last_probed_at": "2026-09-03T18:12:57.906Z",
+      "http_status": 402,
       "taxonomy": [
         "fx.ar.cripto"
       ],
@@ -679,7 +679,7 @@
       "is_free_tier": false,
       "endpoints": [
         {
-          "path": "/v1/fx/cripto",
+          "path": "/v1/fx/usd/cripto",
           "method": "GET",
           "description": "Cotización del dólar cripto (USDT) en Argentina.",
           "price": "$0.001"
@@ -699,11 +699,11 @@
       "pay_to": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
       "source_url": "https://ar-agent-fx.mswitach.workers.dev",
       "date_detected": "2026-08-27",
-      "date_updated": "2026-08-27",
+      "date_updated": "2026-09-03",
       "status": "active",
       "callable": "live",
-      "last_probed_at": "2026-08-27T01:22:14.405Z",
-      "http_status": 200,
+      "last_probed_at": "2026-09-03T18:12:58.122Z",
+      "http_status": 402,
       "taxonomy": [
         "fx.ar.mayorista"
       ],
@@ -714,7 +714,7 @@
       "is_free_tier": false,
       "endpoints": [
         {
-          "path": "/v1/fx/mayorista",
+          "path": "/v1/fx/usd/mayorista",
           "method": "GET",
           "description": "Cotización del dólar mayorista (interbancario) en Argentina.",
           "price": "$0.001"
@@ -734,11 +734,11 @@
       "pay_to": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
       "source_url": "https://ar-agent-fx.mswitach.workers.dev",
       "date_detected": "2026-08-27",
-      "date_updated": "2026-08-27",
+      "date_updated": "2026-09-03",
       "status": "active",
       "callable": "live",
-      "last_probed_at": "2026-08-27T01:22:14.405Z",
-      "http_status": 200,
+      "last_probed_at": "2026-09-03T18:12:58.335Z",
+      "http_status": 402,
       "taxonomy": [
         "fx.ar.tarjeta"
       ],
@@ -749,7 +749,7 @@
       "is_free_tier": false,
       "endpoints": [
         {
-          "path": "/v1/fx/tarjeta",
+          "path": "/v1/fx/usd/tarjeta",
           "method": "GET",
           "description": "Cotización del dólar tarjeta (oficial + impuestos) en Argentina.",
           "price": "$0.001"
@@ -769,11 +769,11 @@
       "pay_to": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
       "source_url": "https://ar-agent-fx.mswitach.workers.dev",
       "date_detected": "2026-08-27",
-      "date_updated": "2026-08-27",
+      "date_updated": "2026-09-03",
       "status": "active",
       "callable": "live",
-      "last_probed_at": "2026-08-27T01:22:14.405Z",
-      "http_status": 200,
+      "last_probed_at": "2026-09-03T18:12:58.553Z",
+      "http_status": 402,
       "taxonomy": [
         "bcra.deudores",
         "aml.ar"
@@ -785,7 +785,7 @@
       "is_free_tier": false,
       "endpoints": [
         {
-          "path": "/v1/bcra/deudores",
+          "path": "/v1/bcra/deudores/{cuit}",
           "method": "GET",
           "description": "Consulta de deudores del sistema financiero argentino (Central de Deudores del BCRA) por CUIT.",
           "price": "$0.01"
@@ -794,9 +794,9 @@
     },
     {
       "id": "ar-agent-afip-cuit",
-      "name": "AR Agent – AFIP CUIT",
+      "name": "AR Agent – CUIT",
       "category": "Legal / Compliance / Argentina",
-      "description": "Consulta de datos de CUIT/CUIL en AFIP (Administración Federal de Ingresos Públicos de Argentina).",
+      "description": "Validación de CUIT (módulo 11) más denominación pública BCRA. No es padrón AFIP completo.",
       "price_display": "$0.01",
       "network": "Base Sepolia (eip155:84532)",
       "protocol": "x402",
@@ -805,11 +805,11 @@
       "pay_to": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
       "source_url": "https://ar-agent-fx.mswitach.workers.dev",
       "date_detected": "2026-08-27",
-      "date_updated": "2026-08-27",
+      "date_updated": "2026-09-03",
       "status": "active",
       "callable": "live",
-      "last_probed_at": "2026-08-27T01:22:14.405Z",
-      "http_status": 200,
+      "last_probed_at": "2026-09-03T18:12:58.766Z",
+      "http_status": 402,
       "taxonomy": [
         "afip.cuit",
         "registro.ar"
@@ -821,9 +821,9 @@
       "is_free_tier": false,
       "endpoints": [
         {
-          "path": "/v1/afip/cuit",
+          "path": "/v1/cuit/{cuit}",
           "method": "GET",
-          "description": "Consulta de datos de CUIT/CUIL en AFIP (Administración Federal de Ingresos Públicos de Argentina).",
+          "description": "Validación de CUIT (módulo 11) más denominación pública BCRA. No es padrón AFIP completo.",
           "price": "$0.01"
         }
       ]
@@ -841,11 +841,11 @@
       "pay_to": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
       "source_url": "https://ar-agent-fx.mswitach.workers.dev",
       "date_detected": "2026-08-27",
-      "date_updated": "2026-08-27",
+      "date_updated": "2026-09-03",
       "status": "active",
       "callable": "live",
-      "last_probed_at": "2026-08-27T01:22:14.405Z",
-      "http_status": 200,
+      "last_probed_at": "2026-09-03T18:12:58.982Z",
+      "http_status": 402,
       "taxonomy": [
         "feriados.ar"
       ],
@@ -867,7 +867,7 @@
       "id": "ar-agent-infoleg-search",
       "name": "AR Agent – InfoLEG Búsqueda",
       "category": "Legal / Argentina",
-      "description": "Búsqueda de normas legales argentinas en InfoLEG (base de datos de legislación argentina).",
+      "description": "Búsqueda de normas legales argentinas en InfoLEG (scrape HTML; no es API oficial JSON).",
       "price_display": "$0.005",
       "network": "Base Sepolia (eip155:84532)",
       "protocol": "x402",
@@ -876,11 +876,11 @@
       "pay_to": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
       "source_url": "https://ar-agent-fx.mswitach.workers.dev",
       "date_detected": "2026-08-27",
-      "date_updated": "2026-08-27",
+      "date_updated": "2026-09-03",
       "status": "active",
       "callable": "live",
-      "last_probed_at": "2026-08-27T01:22:14.405Z",
-      "http_status": 200,
+      "last_probed_at": "2026-09-03T18:12:59.195Z",
+      "http_status": 402,
       "taxonomy": [
         "infoleg.search"
       ],
@@ -893,7 +893,7 @@
         {
           "path": "/v1/legal/search",
           "method": "GET",
-          "description": "Búsqueda de normas legales argentinas en InfoLEG (base de datos de legislación argentina).",
+          "description": "Búsqueda de normas legales argentinas en InfoLEG (scrape HTML; no es API oficial JSON).",
           "price": "$0.005"
         }
       ]
@@ -911,11 +911,11 @@
       "pay_to": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
       "source_url": "https://ar-agent-fx.mswitach.workers.dev",
       "date_detected": "2026-08-27",
-      "date_updated": "2026-08-27",
+      "date_updated": "2026-09-03",
       "status": "active",
       "callable": "live",
-      "last_probed_at": "2026-08-27T01:22:14.405Z",
-      "http_status": 200,
+      "last_probed_at": "2026-09-03T18:12:59.410Z",
+      "http_status": 402,
       "taxonomy": [
         "infoleg.norma"
       ],
