@@ -7,7 +7,7 @@
       "category": "Web scraping / automatización",
       "description": "Marketplace de más de 20.000 \"Actors\" (scrapers y bots de automatización web: Instagram, Google Maps, e-commerce, TikTok, Twitter/X, etc.) pagables por uso, sin cuenta ni API key, en partnership con Coinbase.",
       "price_display": "Variable por actor (ej. Instagram Profile Scraper ~380 perfiles/USD; Google Maps Crawler ~250 lugares/USD)",
-      "network": "Base (USDC)",
+      "network": null,
       "protocol": "x402",
       "url": "https://apify.com",
       "source_url": "https://blog.apify.com/introducing-x402-agentic-payments/",
@@ -22,9 +22,15 @@
         "US"
       ],
       "endpoint_url": "https://apify.com",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:35.342Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "exa-api",
@@ -32,7 +38,7 @@
       "category": "Búsqueda web / IA",
       "description": "Endpoints /search (búsqueda web) y /contents (extracción de contenido de URLs) pagables por request, sin API key, con liquidación on-chain.",
       "price_display": "$0.007–$0.015 por búsqueda según tipo; $0.001 por página de contenido",
-      "network": "Base y Solana (USDC)",
+      "network": null,
       "protocol": "x402",
       "url": "https://exa.ai/docs/reference/x402-guide",
       "source_url": "https://exa.ai/docs/reference/x402-guide",
@@ -47,9 +53,15 @@
         "US"
       ],
       "endpoint_url": "https://exa.ai",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:36.096Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "browserbase",
@@ -57,7 +69,7 @@
       "category": "Automatización de navegador",
       "description": "Sesiones de navegador real programáticas para agentes de IA (navegar sitios, interactuar con UI, completar formularios, extraer datos), descubribles y pagables sin API key ni billing setup, vía x402 Bazaar.",
       "price_display": "Pay-per-session (monto no publicado)",
-      "network": "USDC (liquidación vía Coinbase Business)",
+      "network": null,
       "protocol": "x402",
       "url": "https://x402.browserbase.com/",
       "source_url": "https://www.browserbase.com/blog/browserbase-and-coinbase-x402",
@@ -72,9 +84,15 @@
         "US"
       ],
       "endpoint_url": "https://x402.browserbase.com",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:36.687Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "allium-agenthub",
@@ -82,7 +100,7 @@
       "category": "Datos blockchain / on-chain",
       "description": "Datos históricos y en tiempo real de más de 150 blockchains (precios, balances, transacciones, PnL) y acceso SQL exploratorio, pago por consulta sin suscripción ni API key.",
       "price_display": "Pay-per-query (monto variable)",
-      "network": "Base (USDC)",
+      "network": null,
       "protocol": "x402",
       "url": "https://agents.allium.so/",
       "source_url": "https://agents.allium.so/",
@@ -97,9 +115,15 @@
         "US"
       ],
       "endpoint_url": "https://agents.allium.so",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:37.406Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "apihub-weather-api",
@@ -107,7 +131,7 @@
       "category": "Clima",
       "description": "Condiciones climáticas actuales y pronósticos multi-día para cualquier ciudad del mundo (temperatura, viento, humedad, presión). Incluye 100 llamadas gratis mensuales.",
       "price_display": "$0.001/request (clima actual); $0.002/request (pronóstico)",
-      "network": "Base (USDC)",
+      "network": null,
       "protocol": "x402",
       "url": "https://apihub.io/marketplace/weather",
       "source_url": "https://apihub.io/marketplace/weather",
@@ -120,9 +144,15 @@
       ],
       "country": null,
       "endpoint_url": "https://apihub.io/marketplace/weather",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:38.043Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "x402-tokens",
@@ -130,7 +160,7 @@
       "category": "IA / LLM",
       "description": "API compatible con OpenAI para inferencia de modelos de texto, imagen y video, pagada directamente en cripto en vez de con API key, con precios dinámicos según tipo de consulta.",
       "price_display": "Variable (consultas largas con descuento vía \"leCore memory\"; consultas cortas con recargo 3x)",
-      "network": "Solana (USDC/TOKEN/LEOS), Base (USDC), Robinhood Chain (USDG y otros)",
+      "network": null,
       "protocol": "x402",
       "url": "https://x402-tokens.fly.dev/",
       "source_url": "https://x402-tokens.fly.dev/",
@@ -146,9 +176,15 @@
         "US"
       ],
       "endpoint_url": "https://x402-tokens.fly.dev",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:40.455Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "strale",
@@ -156,7 +192,7 @@
       "category": "Legal / Compliance",
       "description": "Infraestructura de confianza y calidad para agentes de IA: datos de registro empresarial y compliance para más de 20 países, con más de 250 herramientas de negocio/compliance disponibles vía MCP.",
       "price_display": "$0.0216/consulta (registro empresarial)",
-      "network": "Base (USDC)",
+      "network": null,
       "protocol": "x402",
       "url": "https://strale.dev/docs",
       "source_url": "https://x402-list.com/services/strale ; https://github.com/xpaysh/awesome-x402",
@@ -170,9 +206,15 @@
       ],
       "country": null,
       "endpoint_url": "https://strale.dev",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:41.145Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "fda-intelligence-api",
@@ -195,9 +237,15 @@
       "country": [
         "US"
       ],
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": null,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:41.797Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "nutrition-intelligence-api",
@@ -220,9 +268,15 @@
       "country": [
         "US"
       ],
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": null,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:42.097Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "sanctions-screening-api",
@@ -243,9 +297,15 @@
         "aml"
       ],
       "country": null,
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": null,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:42.398Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "cve-intelligence-api",
@@ -266,9 +326,15 @@
         "vulnerabilities"
       ],
       "country": null,
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": null,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:42.699Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "bitrefill",
@@ -276,7 +342,7 @@
       "category": "Finanzas / Utilidades",
       "description": "Compra de gift cards, eSIMs y recargas de celular pagables directamente en cripto vía x402, sin cuenta previa.",
       "price_display": "Desde $0.001",
-      "network": "Arbitrum, Base, Polygon, Solana (USDC)",
+      "network": null,
       "protocol": "x402",
       "url": "https://www.bitrefill.com",
       "source_url": "https://x402-list.com/services/bitrefill",
@@ -290,9 +356,15 @@
       ],
       "country": null,
       "endpoint_url": "https://www.bitrefill.com",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:42.999Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "coingecko",
@@ -300,7 +372,7 @@
       "category": "Finanzas / Cripto",
       "description": "Precios de criptomonedas y datos de exchanges descentralizados (DEX) para agentes, pagables por consulta sin API key.",
       "price_display": "$0.01/consulta",
-      "network": "Solana y Base (USDC)",
+      "network": null,
       "protocol": "x402",
       "url": "https://www.coingecko.com",
       "source_url": "https://x402-list.com/services/coingecko",
@@ -314,9 +386,15 @@
       ],
       "country": null,
       "endpoint_url": "https://www.coingecko.com",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:44.183Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "nansen",
@@ -324,7 +402,7 @@
       "category": "Datos / Blockchain",
       "description": "Analítica on-chain de wallets y flujos de tokens (labels, smart money tracking), pagable por consulta sin suscripción.",
       "price_display": "$0.01/consulta",
-      "network": "Base y Solana (USDC)",
+      "network": null,
       "protocol": "x402",
       "url": "https://www.nansen.ai",
       "source_url": "https://x402-list.com/services/nansen",
@@ -338,9 +416,15 @@
       ],
       "country": null,
       "endpoint_url": "https://www.nansen.ai",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:44.817Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "2s-io",
@@ -348,7 +432,7 @@
       "category": "Legal / Datos",
       "description": "Agregador de 316 endpoints de datos (patentes, información legal, gubernamental y financiera), pagable por consulta sin suscripción.",
       "price_display": "$0.0025/consulta",
-      "network": "Solana y Base (USDC)",
+      "network": null,
       "protocol": "x402",
       "url": "https://2s.io",
       "source_url": "https://2s.io/learn/x402",
@@ -362,9 +446,15 @@
       ],
       "country": null,
       "endpoint_url": "https://2s.io",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:45.497Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "stableemail",
@@ -372,7 +462,7 @@
       "category": "Utilidades",
       "description": "Envío de emails pagado por micropago en USDC en vez de suscripción mensual, pensado para agentes de IA.",
       "price_display": "$0.02/envío",
-      "network": "Base y Solana (USDC)",
+      "network": null,
       "protocol": "x402",
       "url": "https://stableemail.dev",
       "source_url": "https://stableemail.dev/",
@@ -385,9 +475,15 @@
       ],
       "country": null,
       "endpoint_url": "https://stableemail.dev",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:46.513Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "x402scan",
@@ -395,7 +491,7 @@
       "category": "Datos / Infraestructura",
       "description": "Explorador del ecosistema x402: métricas de uso, recursos populares y actividad de facilitadores; open source.",
       "price_display": "$0.01/consulta (algunos endpoints)",
-      "network": "Base (USDC)",
+      "network": null,
       "protocol": "x402",
       "url": "https://www.x402scan.com",
       "source_url": "https://www.x402scan.com/",
@@ -408,9 +504,15 @@
       ],
       "country": null,
       "endpoint_url": "https://www.x402scan.com",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:47.310Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "vibe-springs",
@@ -418,7 +520,7 @@
       "category": "Clima / Utilidades",
       "description": "Datos de clima, terremotos, tipos de cambio fiat y riesgo de direcciones on-chain agrupados en un mismo servicio.",
       "price_display": "$0.002/consulta",
-      "network": "Base (USDC)",
+      "network": null,
       "protocol": "x402",
       "url": "https://x402-list.com/services/vibe-springs",
       "source_url": "https://x402-list.com/services",
@@ -431,9 +533,15 @@
         "utilidades"
       ],
       "country": null,
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:48.501Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "venice-ai",
@@ -441,7 +549,7 @@
       "category": "IA / LLM",
       "description": "Inferencia de modelos de lenguaje e imagen \"sin censura\", con pago directo en cripto (prepago) en vez de suscripción o API key.",
       "price_display": "$10.00 prepago (consumo por uso)",
-      "network": "Solana y Base (USDC)",
+      "network": null,
       "protocol": "x402",
       "url": "https://docs.venice.ai/overview/guides/x402-venice-api",
       "source_url": "https://venice.ai/blog/venice-now-supports-x402",
@@ -457,9 +565,15 @@
         "US"
       ],
       "endpoint_url": "https://docs.venice.ai",
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": 200,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:50.011Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "edgar-intelligence-api",
@@ -482,9 +596,15 @@
       "country": [
         "US"
       ],
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": null,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:50.982Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "mailcheck-api",
@@ -505,9 +625,15 @@
         "email"
       ],
       "country": null,
-      "callable": "unchecked",
+      "callable": "dead",
       "extensions": [],
-      "is_free_tier": false
+      "is_free_tier": false,
+      "http_status": null,
+      "is_402": false,
+      "last_probed_at": "2026-09-03T18:32:51.283Z",
+      "asset": null,
+      "amount": null,
+      "pay_to": null
     },
     {
       "id": "ar-agent-fx-usd",
@@ -515,7 +641,7 @@
       "category": "Finanzas / Tipo de cambio / Argentina",
       "description": "Cotización USD/ARS oficial (BCRA) vía /v1/fx/usd/oficial. El worker también expone el dump multi-casa en /v1/fx/usd.",
       "price_display": "$0.001",
-      "network": "Base Sepolia (eip155:84532)",
+      "network": "eip155:84532",
       "protocol": "x402",
       "url": "https://ar-agent-fx.mswitach.workers.dev",
       "endpoint_url": "https://ar-agent-fx.mswitach.workers.dev",
@@ -524,8 +650,8 @@
       "date_detected": "2026-08-27",
       "date_updated": "2026-09-03",
       "status": "active",
-      "callable": "live",
-      "last_probed_at": "2026-09-03T18:12:57.048Z",
+      "callable": "testnet",
+      "last_probed_at": "2026-09-03T18:32:51.584Z",
       "http_status": 402,
       "taxonomy": [
         "fx.ar.oficial"
@@ -540,9 +666,20 @@
           "path": "/v1/fx/usd/oficial",
           "method": "GET",
           "description": "Cotización USD/ARS oficial (BCRA) vía /v1/fx/usd/oficial. El worker también expone el dump multi-casa en /v1/fx/usd.",
-          "price": "$0.001"
+          "price": "$0.001",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:84532",
+          "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+          "amount": "1000",
+          "payTo": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
+          "probed_at": "2026-09-03T18:32:51.584Z",
+          "callable": "testnet"
         }
-      ]
+      ],
+      "is_402": true,
+      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "amount": "1000"
     },
     {
       "id": "ar-agent-fx-casa-blue",
@@ -550,7 +687,7 @@
       "category": "Finanzas / Tipo de cambio / Argentina",
       "description": "Cotización del dólar blue (mercado informal) en Argentina.",
       "price_display": "$0.001",
-      "network": "Base Sepolia (eip155:84532)",
+      "network": "eip155:84532",
       "protocol": "x402",
       "url": "https://ar-agent-fx.mswitach.workers.dev",
       "endpoint_url": "https://ar-agent-fx.mswitach.workers.dev",
@@ -559,8 +696,8 @@
       "date_detected": "2026-08-27",
       "date_updated": "2026-09-03",
       "status": "active",
-      "callable": "live",
-      "last_probed_at": "2026-09-03T18:12:57.264Z",
+      "callable": "testnet",
+      "last_probed_at": "2026-09-03T18:32:52.155Z",
       "http_status": 402,
       "taxonomy": [
         "fx.ar.blue"
@@ -575,9 +712,20 @@
           "path": "/v1/fx/usd/blue",
           "method": "GET",
           "description": "Cotización del dólar blue (mercado informal) en Argentina.",
-          "price": "$0.001"
+          "price": "$0.001",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:84532",
+          "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+          "amount": "1000",
+          "payTo": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
+          "probed_at": "2026-09-03T18:32:52.155Z",
+          "callable": "testnet"
         }
-      ]
+      ],
+      "is_402": true,
+      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "amount": "1000"
     },
     {
       "id": "ar-agent-fx-casa-bolsa",
@@ -585,7 +733,7 @@
       "category": "Finanzas / Tipo de cambio / Argentina",
       "description": "Cotización del dólar MEP (Mercado Electrónico de Pagos) en Argentina.",
       "price_display": "$0.001",
-      "network": "Base Sepolia (eip155:84532)",
+      "network": "eip155:84532",
       "protocol": "x402",
       "url": "https://ar-agent-fx.mswitach.workers.dev",
       "endpoint_url": "https://ar-agent-fx.mswitach.workers.dev",
@@ -594,8 +742,8 @@
       "date_detected": "2026-08-27",
       "date_updated": "2026-09-03",
       "status": "active",
-      "callable": "live",
-      "last_probed_at": "2026-09-03T18:12:57.478Z",
+      "callable": "testnet",
+      "last_probed_at": "2026-09-03T18:32:52.671Z",
       "http_status": 402,
       "taxonomy": [
         "fx.ar.bolsa",
@@ -611,9 +759,20 @@
           "path": "/v1/fx/usd/bolsa",
           "method": "GET",
           "description": "Cotización del dólar MEP (Mercado Electrónico de Pagos) en Argentina.",
-          "price": "$0.001"
+          "price": "$0.001",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:84532",
+          "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+          "amount": "1000",
+          "payTo": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
+          "probed_at": "2026-09-03T18:32:52.671Z",
+          "callable": "testnet"
         }
-      ]
+      ],
+      "is_402": true,
+      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "amount": "1000"
     },
     {
       "id": "ar-agent-fx-casa-ccl",
@@ -621,7 +780,7 @@
       "category": "Finanzas / Tipo de cambio / Argentina",
       "description": "Cotización del dólar Contado con Liquidación (CCL) en Argentina.",
       "price_display": "$0.001",
-      "network": "Base Sepolia (eip155:84532)",
+      "network": "eip155:84532",
       "protocol": "x402",
       "url": "https://ar-agent-fx.mswitach.workers.dev",
       "endpoint_url": "https://ar-agent-fx.mswitach.workers.dev",
@@ -630,8 +789,8 @@
       "date_detected": "2026-08-27",
       "date_updated": "2026-09-03",
       "status": "active",
-      "callable": "live",
-      "last_probed_at": "2026-09-03T18:12:57.692Z",
+      "callable": "testnet",
+      "last_probed_at": "2026-09-03T18:32:53.188Z",
       "http_status": 402,
       "taxonomy": [
         "fx.ar.ccl",
@@ -647,9 +806,20 @@
           "path": "/v1/fx/usd/contadoconliqui",
           "method": "GET",
           "description": "Cotización del dólar Contado con Liquidación (CCL) en Argentina.",
-          "price": "$0.001"
+          "price": "$0.001",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:84532",
+          "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+          "amount": "1000",
+          "payTo": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
+          "probed_at": "2026-09-03T18:32:53.188Z",
+          "callable": "testnet"
         }
-      ]
+      ],
+      "is_402": true,
+      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "amount": "1000"
     },
     {
       "id": "ar-agent-fx-casa-cripto",
@@ -657,7 +827,7 @@
       "category": "Finanzas / Tipo de cambio / Argentina",
       "description": "Cotización del dólar cripto (USDT) en Argentina.",
       "price_display": "$0.001",
-      "network": "Base Sepolia (eip155:84532)",
+      "network": "eip155:84532",
       "protocol": "x402",
       "url": "https://ar-agent-fx.mswitach.workers.dev",
       "endpoint_url": "https://ar-agent-fx.mswitach.workers.dev",
@@ -666,8 +836,8 @@
       "date_detected": "2026-08-27",
       "date_updated": "2026-09-03",
       "status": "active",
-      "callable": "live",
-      "last_probed_at": "2026-09-03T18:12:57.906Z",
+      "callable": "testnet",
+      "last_probed_at": "2026-09-03T18:32:53.706Z",
       "http_status": 402,
       "taxonomy": [
         "fx.ar.cripto"
@@ -682,9 +852,20 @@
           "path": "/v1/fx/usd/cripto",
           "method": "GET",
           "description": "Cotización del dólar cripto (USDT) en Argentina.",
-          "price": "$0.001"
+          "price": "$0.001",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:84532",
+          "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+          "amount": "1000",
+          "payTo": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
+          "probed_at": "2026-09-03T18:32:53.706Z",
+          "callable": "testnet"
         }
-      ]
+      ],
+      "is_402": true,
+      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "amount": "1000"
     },
     {
       "id": "ar-agent-fx-casa-mayorista",
@@ -692,7 +873,7 @@
       "category": "Finanzas / Tipo de cambio / Argentina",
       "description": "Cotización del dólar mayorista (interbancario) en Argentina.",
       "price_display": "$0.001",
-      "network": "Base Sepolia (eip155:84532)",
+      "network": "eip155:84532",
       "protocol": "x402",
       "url": "https://ar-agent-fx.mswitach.workers.dev",
       "endpoint_url": "https://ar-agent-fx.mswitach.workers.dev",
@@ -701,8 +882,8 @@
       "date_detected": "2026-08-27",
       "date_updated": "2026-09-03",
       "status": "active",
-      "callable": "live",
-      "last_probed_at": "2026-09-03T18:12:58.122Z",
+      "callable": "testnet",
+      "last_probed_at": "2026-09-03T18:32:54.222Z",
       "http_status": 402,
       "taxonomy": [
         "fx.ar.mayorista"
@@ -717,9 +898,20 @@
           "path": "/v1/fx/usd/mayorista",
           "method": "GET",
           "description": "Cotización del dólar mayorista (interbancario) en Argentina.",
-          "price": "$0.001"
+          "price": "$0.001",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:84532",
+          "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+          "amount": "1000",
+          "payTo": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
+          "probed_at": "2026-09-03T18:32:54.222Z",
+          "callable": "testnet"
         }
-      ]
+      ],
+      "is_402": true,
+      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "amount": "1000"
     },
     {
       "id": "ar-agent-fx-casa-tarjeta",
@@ -727,7 +919,7 @@
       "category": "Finanzas / Tipo de cambio / Argentina",
       "description": "Cotización del dólar tarjeta (oficial + impuestos) en Argentina.",
       "price_display": "$0.001",
-      "network": "Base Sepolia (eip155:84532)",
+      "network": "eip155:84532",
       "protocol": "x402",
       "url": "https://ar-agent-fx.mswitach.workers.dev",
       "endpoint_url": "https://ar-agent-fx.mswitach.workers.dev",
@@ -736,8 +928,8 @@
       "date_detected": "2026-08-27",
       "date_updated": "2026-09-03",
       "status": "active",
-      "callable": "live",
-      "last_probed_at": "2026-09-03T18:12:58.335Z",
+      "callable": "testnet",
+      "last_probed_at": "2026-09-03T18:32:54.740Z",
       "http_status": 402,
       "taxonomy": [
         "fx.ar.tarjeta"
@@ -752,9 +944,20 @@
           "path": "/v1/fx/usd/tarjeta",
           "method": "GET",
           "description": "Cotización del dólar tarjeta (oficial + impuestos) en Argentina.",
-          "price": "$0.001"
+          "price": "$0.001",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:84532",
+          "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+          "amount": "1000",
+          "payTo": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
+          "probed_at": "2026-09-03T18:32:54.740Z",
+          "callable": "testnet"
         }
-      ]
+      ],
+      "is_402": true,
+      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "amount": "1000"
     },
     {
       "id": "ar-agent-bcra-deudores",
@@ -762,7 +965,7 @@
       "category": "Legal / Compliance / Argentina",
       "description": "Consulta de deudores del sistema financiero argentino (Central de Deudores del BCRA) por CUIT.",
       "price_display": "$0.01",
-      "network": "Base Sepolia (eip155:84532)",
+      "network": "eip155:84532",
       "protocol": "x402",
       "url": "https://ar-agent-fx.mswitach.workers.dev",
       "endpoint_url": "https://ar-agent-fx.mswitach.workers.dev",
@@ -771,8 +974,8 @@
       "date_detected": "2026-08-27",
       "date_updated": "2026-09-03",
       "status": "active",
-      "callable": "live",
-      "last_probed_at": "2026-09-03T18:12:58.553Z",
+      "callable": "testnet",
+      "last_probed_at": "2026-09-03T18:32:55.256Z",
       "http_status": 402,
       "taxonomy": [
         "bcra.deudores",
@@ -788,9 +991,20 @@
           "path": "/v1/bcra/deudores/{cuit}",
           "method": "GET",
           "description": "Consulta de deudores del sistema financiero argentino (Central de Deudores del BCRA) por CUIT.",
-          "price": "$0.01"
+          "price": "$0.01",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:84532",
+          "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+          "amount": "10000",
+          "payTo": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
+          "probed_at": "2026-09-03T18:32:55.256Z",
+          "callable": "testnet"
         }
-      ]
+      ],
+      "is_402": true,
+      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "amount": "10000"
     },
     {
       "id": "ar-agent-afip-cuit",
@@ -798,7 +1012,7 @@
       "category": "Legal / Compliance / Argentina",
       "description": "Validación de CUIT (módulo 11) más denominación pública BCRA. No es padrón AFIP completo.",
       "price_display": "$0.01",
-      "network": "Base Sepolia (eip155:84532)",
+      "network": "eip155:84532",
       "protocol": "x402",
       "url": "https://ar-agent-fx.mswitach.workers.dev",
       "endpoint_url": "https://ar-agent-fx.mswitach.workers.dev",
@@ -807,8 +1021,8 @@
       "date_detected": "2026-08-27",
       "date_updated": "2026-09-03",
       "status": "active",
-      "callable": "live",
-      "last_probed_at": "2026-09-03T18:12:58.766Z",
+      "callable": "testnet",
+      "last_probed_at": "2026-09-03T18:32:55.772Z",
       "http_status": 402,
       "taxonomy": [
         "afip.cuit",
@@ -824,9 +1038,20 @@
           "path": "/v1/cuit/{cuit}",
           "method": "GET",
           "description": "Validación de CUIT (módulo 11) más denominación pública BCRA. No es padrón AFIP completo.",
-          "price": "$0.01"
+          "price": "$0.01",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:84532",
+          "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+          "amount": "10000",
+          "payTo": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
+          "probed_at": "2026-09-03T18:32:55.772Z",
+          "callable": "testnet"
         }
-      ]
+      ],
+      "is_402": true,
+      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "amount": "10000"
     },
     {
       "id": "ar-agent-feriados",
@@ -834,7 +1059,7 @@
       "category": "Utilidades / Argentina",
       "description": "Listado de feriados nacionales en Argentina por año.",
       "price_display": "$0.001",
-      "network": "Base Sepolia (eip155:84532)",
+      "network": "eip155:84532",
       "protocol": "x402",
       "url": "https://ar-agent-fx.mswitach.workers.dev",
       "endpoint_url": "https://ar-agent-fx.mswitach.workers.dev",
@@ -843,8 +1068,8 @@
       "date_detected": "2026-08-27",
       "date_updated": "2026-09-03",
       "status": "active",
-      "callable": "live",
-      "last_probed_at": "2026-09-03T18:12:58.982Z",
+      "callable": "testnet",
+      "last_probed_at": "2026-09-03T18:32:56.289Z",
       "http_status": 402,
       "taxonomy": [
         "feriados.ar"
@@ -859,9 +1084,20 @@
           "path": "/v1/feriados/{year}",
           "method": "GET",
           "description": "Listado de feriados nacionales en Argentina por año.",
-          "price": "$0.001"
+          "price": "$0.001",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:84532",
+          "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+          "amount": "1000",
+          "payTo": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
+          "probed_at": "2026-09-03T18:32:56.289Z",
+          "callable": "testnet"
         }
-      ]
+      ],
+      "is_402": true,
+      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "amount": "1000"
     },
     {
       "id": "ar-agent-infoleg-search",
@@ -869,7 +1105,7 @@
       "category": "Legal / Argentina",
       "description": "Búsqueda de normas legales argentinas en InfoLEG (scrape HTML; no es API oficial JSON).",
       "price_display": "$0.005",
-      "network": "Base Sepolia (eip155:84532)",
+      "network": "eip155:84532",
       "protocol": "x402",
       "url": "https://ar-agent-fx.mswitach.workers.dev",
       "endpoint_url": "https://ar-agent-fx.mswitach.workers.dev",
@@ -878,8 +1114,8 @@
       "date_detected": "2026-08-27",
       "date_updated": "2026-09-03",
       "status": "active",
-      "callable": "live",
-      "last_probed_at": "2026-09-03T18:12:59.195Z",
+      "callable": "testnet",
+      "last_probed_at": "2026-09-03T18:32:56.804Z",
       "http_status": 402,
       "taxonomy": [
         "infoleg.search"
@@ -894,9 +1130,20 @@
           "path": "/v1/legal/search",
           "method": "GET",
           "description": "Búsqueda de normas legales argentinas en InfoLEG (scrape HTML; no es API oficial JSON).",
-          "price": "$0.005"
+          "price": "$0.005",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:84532",
+          "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+          "amount": "5000",
+          "payTo": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
+          "probed_at": "2026-09-03T18:32:56.804Z",
+          "callable": "testnet"
         }
-      ]
+      ],
+      "is_402": true,
+      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "amount": "5000"
     },
     {
       "id": "ar-agent-infoleg-norma",
@@ -904,7 +1151,7 @@
       "category": "Legal / Argentina",
       "description": "Obtiene el texto completo de una norma legal argentina por ID de InfoLEG.",
       "price_display": "$0.01",
-      "network": "Base Sepolia (eip155:84532)",
+      "network": "eip155:84532",
       "protocol": "x402",
       "url": "https://ar-agent-fx.mswitach.workers.dev",
       "endpoint_url": "https://ar-agent-fx.mswitach.workers.dev",
@@ -913,8 +1160,8 @@
       "date_detected": "2026-08-27",
       "date_updated": "2026-09-03",
       "status": "active",
-      "callable": "live",
-      "last_probed_at": "2026-09-03T18:12:59.410Z",
+      "callable": "testnet",
+      "last_probed_at": "2026-09-03T18:32:57.318Z",
       "http_status": 402,
       "taxonomy": [
         "infoleg.norma"
@@ -929,9 +1176,20 @@
           "path": "/v1/legal/norma/{id}",
           "method": "GET",
           "description": "Obtiene el texto completo de una norma legal argentina por ID de InfoLEG.",
-          "price": "$0.01"
+          "price": "$0.01",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:84532",
+          "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+          "amount": "10000",
+          "payTo": "0xFd576f2fEf750E202ad8DbDfEcEF088f9AA7A30F",
+          "probed_at": "2026-09-03T18:32:57.318Z",
+          "callable": "testnet"
         }
-      ]
+      ],
+      "is_402": true,
+      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "amount": "10000"
     }
   ]
 }
