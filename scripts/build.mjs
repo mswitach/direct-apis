@@ -99,14 +99,13 @@ function siteHeader(active) {
     <a href="${BASE_PATH}/" class="${active === "home" ? "is-active" : ""}">Listado</a>
     <a href="${BASE_PATH}/api/apis.json">JSON</a>
     <a href="${BASE_PATH}/llms.txt">llms.txt</a>
-    <a href="${REPO_URL}">Repo</a>
   </nav>
 </header>`;
 }
 
 function siteFoot(updatedAt) {
   return `<footer class="sitefoot">
-  <p><strong>${SITE_NAME}</strong> — catálogo x402. Código en <a href="${REPO_URL}">marketplace-402</a>.</p>
+  <p><strong>${SITE_NAME}</strong> — catálogo x402 de APIs LatAm pagables por uso.</p>
   <p>Discovery para agentes (estático): <a href="${BASE_PATH}/.well-known/x402.json">/.well-known/x402.json</a> · <a href="${BASE_PATH}/discovery/resources">/discovery/resources</a> · <a href="${BASE_PATH}/discovery/resources.json">resources.json</a> · <a href="${BASE_PATH}/openapi.json">openapi.json</a> · <a href="${BASE_PATH}/mcp/manifest.json">mcp/manifest.json</a></p>
   <p>Datos abiertos, sin API key: <a href="${BASE_PATH}/api/apis.json">apis.json</a> · <a href="${BASE_PATH}/api/apis.ndjson">apis.ndjson</a> · <a href="${BASE_PATH}/llms.txt">llms.txt</a></p>
   <p>Submit, probe en vivo y MCP call-through: solo local <span class="mono">npm run dev</span> :${LOCAL_PORT}. Relevamiento curado a mano. Última actualización: <span class="mono">${updatedAt}</span>.</p>
@@ -219,7 +218,7 @@ function renderIndex({ updatedAt, apis }) {
     name: SITE_NAME,
     description: SITE_DESC,
     url: `${SITE_URL}/`,
-    creator: { "@type": "Person", name: CONTACT_NAME, url: REPO_URL },
+    creator: { "@type": "Person", name: CONTACT_NAME, url: "https://lupaplaza.com/" },
     keywords: ["x402", "LatAm", "API", "agentes", "pagos por uso"],
     isAccessibleForFree: true,
     dataset: `${SITE_URL}/api/apis.json`,
