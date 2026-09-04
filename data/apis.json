@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-03",
+  "updated_at": "2026-09-04",
   "apis": [
     {
       "id": "apify",
@@ -1190,6 +1190,56 @@
       "is_402": true,
       "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
       "amount": "10000"
+    },
+    {
+      "id": "lupapago-fee-mobbex",
+      "name": "LupaPago fee slice (Mobbex)",
+      "category": "Fees / PSP",
+      "description": "Recorte de fee de Mobbex vía LupaPago: un PSP, no el catálogo completo. $0.01 USDC en Base mainnet (eip155:8453). Tx de liquidación evidenciada: 0x645c71d3bb855826c531187f79d4dac67590ec65c2fdcfc8c5353309afa890ee.",
+      "price_display": "$0.01 USDC",
+      "network": "eip155:8453",
+      "protocol": "x402",
+      "url": "https://lupapago.com",
+      "source_url": "https://lupapago.com/api/fee?psp=mobbex",
+      "date_detected": "2026-09-04",
+      "date_updated": "2026-09-04",
+      "status": "active",
+      "taxonomy": [
+        "fees.psp.ar",
+        "fees",
+        "argentina",
+        "psp"
+      ],
+      "country": [
+        "AR"
+      ],
+      "endpoint_url": "https://lupapago.com/api/fee?psp=mobbex",
+      "callable": "mainnet",
+      "extensions": [],
+      "is_free_tier": false,
+      "http_status": 402,
+      "is_402": true,
+      "last_probed_at": "2026-09-04T14:54:51.118Z",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "amount": "10000",
+      "pay_to": "0x6fc99c8a5334e00f6fce854700959930a3c62dbc",
+      "evidence": "0x645c71d3bb855826c531187f79d4dac67590ec65c2fdcfc8c5353309afa890ee",
+      "endpoints": [
+        {
+          "path": "/api/fee?psp=mobbex",
+          "method": "GET",
+          "description": "Recorte de fee de Mobbex (un PSP, no el catálogo).",
+          "price": "$0.01 USDC",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "10000",
+          "payTo": "0x6fc99c8a5334e00f6fce854700959930a3c62dbc",
+          "callable": "mainnet",
+          "probed_at": "2026-09-04T14:54:51.118Z"
+        }
+      ]
     }
   ]
 }
