@@ -19,7 +19,8 @@ Sitio publicado (estático):
 
 - Nombre visible: LupaPlaza.
 - Discovery para agentes **generado en build time** y servido como archivos estáticos. Vercel y GitHub Pages no corren Express.
-- ~33 listings (21 curadas + 12 first-party `ar-agent-fx`). Sin wash, sin dump de 15k del Bazaar.
+- ~34 listings (21 curadas + 12 first-party `ar-agent-fx` + 1 semilla mainnet). Sin wash, sin dump de 15k del Bazaar.
+- **Semilla mainnet pagable**: recorte de fee de Mobbex vía LupaPago (`lupapago-fee-mobbex`, $0.01 USDC en Base).
 
 Incluye:
 

@@ -359,6 +359,7 @@ function renderLlmsTxt({ updatedAt, apis }) {
     `## Qué es ${SITE_NAME}`,
     "",
     "Un catálogo chico de APIs LatAm pagables vía x402.",
+    "LupaPlaza ya tiene una semilla pagable en mainnet: recorte de fee de Mobbex vía LupaPago (`lupapago-fee-mobbex`).",
     "Cada endpoint se prueba (probe) y se clasifica: mainnet | testnet | dead | incomplete.",
     "Discovery público = **solo mainnet**. Testnet (p. ej. AR Agent en Base Sepolia / eip155:84532) no es inventario de liquidación.",
     "Incluye taxonomía regional (fx.ar.casa, bcra.deudores, afip.cuit, etc.).",
