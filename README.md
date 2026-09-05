@@ -1,44 +1,37 @@
 # LupaPlaza
 
-**Catálogo chico y confiable de APIs LatAm pagables por uso vía x402.**
+**Índice de liquidación LatAm: endpoints cobrables ahora.**
 
 Producto: **LupaPlaza**. Código en [marketplace-402](https://github.com/mswitach/marketplace-402) — el slug del repo no cambia.
 
-Cada endpoint se prueba (probe) para saber si está vivo. Con taxonomía regional: `fx.ar.casa`, `bcra.deudores`, `afip.cuit`, `infoleg.norma`, `feriados.ar`, y más. Para agentes que descubren y pagan con x402. Para personas que buscan APIs honestas sin wash.
+Job de producto (lock): qué **endpoint URL** puede un agente **pagar ahora** (mainnet, 402 live) y llevarse datos. No es un mapa de rieles (eso es **LupaRiel**). No es un directorio de fees de PSP (eso es **LupaPago**). No es un dump global de x402.
+
+El HTML público solo lista mainnet + 402 live. `data/apis.json` puede guardar testnet/dead para el lab.
 
 Sitio publicado (estático):
 
-- GitHub Pages: https://mswitach.github.io/marketplace-402/
-- Vercel (si el proyecto está conectado): raíz del deploy, `outputDirectory: public`
+- **Producción:** https://lupaplaza.com — Cloudflare Pages, proyecto `lupaplaza` (hay que redeployar ese proyecto tras el merge)
+- GitHub Pages (espejo): https://mswitach.github.io/marketplace-402/
 
 ---
 
 ## Qué es
 
-**LupaPlaza** es la evolución de Marketplace 402 / _x402 Index_. Sigue siendo el mismo pipeline (catálogo en `data/apis.json` → `npm run build` → `public/`). Lo que cambió en este corte:
+**LupaPlaza** es el índice de liquidación: `data/apis.json` → `npm run build` → `public/`. Cloudflare Pages (`lupaplaza`) y GitHub Pages sirven solo ese estático.
 
-- Nombre visible: LupaPlaza.
-- Discovery para agentes **generado en build time** y servido como archivos estáticos. Vercel y GitHub Pages no corren Express.
-- ~34 listings (21 curadas + 12 first-party `ar-agent-fx` + 1 semilla mainnet). Sin wash, sin dump de 15k del Bazaar.
-- **Semilla mainnet pagable**: recorte de fee de Mobbex vía LupaPago (`lupapago-fee-mobbex`, $0.01 USDC en Base).
-
-Incluye:
-
-- **Probing honesto**: cada API tiene `callable: "mainnet" | "testnet" | "dead" | "incomplete"` según el 402 real (red CAIP-2, asset, amount, payTo). Un 200 de landing no es paywall.
-- **Taxonomía LatAm**: tags Unicode OK como `fx.ar.blue`, `bcra.deudores`, `afip.cuit`, `infoleg.search`.
-- **Listings first-party AR**: 12 endpoints del worker `ar-agent-fx.mswitach.workers.dev`.
-- **MCP en español (descripción)**: `buscar_servicios`, `obtener_servicio`, `llamar_servicio`. El proxy en vivo es **solo local**. En el host estático el agente paga el seller.
-- **Discovery Bazaar-compatible (estático, solo mainnet)**: `GET /discovery/resources` y `/.well-known/x402.json` no anuncian testnet como inventario settleable. `/api/apis.json` es el dump completo.
-- **Seller submit / probe on-demand**: solo Express local (`npm run dev` :3402). No hay serverless de submit.
+- **Vista pública:** solo listings `callable: "mainnet"` con `is_402: true`. Hoy: semilla `lupapago-fee-mobbex` ($0.01 USDC en Base).
+- **Inclusión:** mainnet + 402 live + preferencia LatAm/AR. Detalle en `/metodologia/` y `llms.txt`.
+- **Lab:** las filas testnet/dead/incomplete quedan en `data/apis.json` y `/api/apis.json`. No se emiten como HTML público ni como tabs.
+- **Probing honesto:** `callable` sale del 402 real (red CAIP-2, asset, amount, payTo). Un 200 de landing no es paywall.
+- **Discovery Bazaar-compatible:** `GET /discovery/resources` = mismo filtro público.
+- **Seller submit / probe on-demand / MCP POST:** solo Express local (`npm run dev` :3402). No hay playground.
 
 **Lo que NO es:**
 
-- No somos Coinbase Bazaar. No listamos 15k servicios (muchos muertos o wash).
-- No somos un directorio de protocolos (nada de LupaRiel ni research de rails).
-- No somos CDP. No hay ingesta masiva.
-- No somos un facilitador genérico. No hacemos escrow, no ramp ARS, no wallet.
-- No hay Express en Fly/Railway. Decisión 28 Ago: servidor local-only.
-- No hay dominio custom en este corte.
+- No somos **LupaRiel** (mapa de rieles).
+- No somos **LupaPago** (directorio de fees de PSP). Un recorte cobrable entra como endpoint, no como tabla de precios.
+- No somos Coinbase Bazaar ni un dump de 15k servicios.
+- No hay Express en producción. No hay nav de Repo en el HTML público.
 
 ---
 
@@ -82,7 +75,7 @@ npm run probe -- --only=ar-agent
 npm run build
 ```
 
-Commit de `data/apis.json` + código → push a `main` → GitHub Pages (`deploy.yml`) y Vercel (`vercel.json`) redeployan el `public/`.
+Commit de `data/apis.json` + código → push a `main` → GitHub Pages (`deploy.yml`). El host de producto es **Cloudflare Pages, proyecto `lupaplaza`**: hay que redeployar ese proyecto para que lupaplaza.com tome el `public/` nuevo.
 
 ### Desarrollo local
 
@@ -116,21 +109,19 @@ En **producción** (Pages / Vercel) solo existen archivos estáticos. No hay Exp
 | `GET /api/apis.json` | Dump completo con `callable` honesto. Discovery es un subset mainnet. |
 | `GET /api/apis.ndjson` | Un objeto por línea |
 | `GET /openapi.json` | OpenAPI 3.1 (`info.title`: LupaPlaza) |
-| `GET /llms.txt` | Guía para LLMs |
+| `GET /llms.txt` | Guía para LLMs + reglas de inclusión |
+| `GET /metodologia/` | Inclusión (humanos): mainnet, 402 live, LatAm/AR; contraste vs LupaRiel / LupaPago |
 | `GET /mcp/manifest.json` | Tres tools. Agentes descubren mainnet vía `/discovery/resources`. Testnet es para humanos/local. |
 
-URLs concretas después del merge (GitHub Pages):
+URLs de producción (Cloudflare Pages `lupaplaza`):
 
-- https://mswitach.github.io/marketplace-402/
-- https://mswitach.github.io/marketplace-402/.well-known/x402.json
-- https://mswitach.github.io/marketplace-402/discovery/resources
-- https://mswitach.github.io/marketplace-402/discovery/resources.json
-- https://mswitach.github.io/marketplace-402/openapi.json
-- https://mswitach.github.io/marketplace-402/llms.txt
-- https://mswitach.github.io/marketplace-402/mcp/manifest.json
-- https://mswitach.github.io/marketplace-402/api/apis.json
-
-Si Vercel está conectado al repo, las mismas rutas viven en la raíz del dominio de Vercel (sin el prefijo `/marketplace-402`).
+- https://lupaplaza.com/
+- https://lupaplaza.com/metodologia/
+- https://lupaplaza.com/apis/lupapago-fee-mobbex/
+- https://lupaplaza.com/.well-known/x402.json
+- https://lupaplaza.com/discovery/resources
+- https://lupaplaza.com/llms.txt
+- https://lupaplaza.com/api/apis.json (dump de lab; no es el índice público)
 
 ### Solo local (`npm run dev` :3402)
 
@@ -259,8 +250,9 @@ Si un path first-party responde 402 completo en Sepolia, queda `callable: "testn
 
 - `data/apis.json`: fuente de verdad.
 - `npm run fetch-ar-agent` / `npm run probe`: actualizan `callable` + campos de probe (commitear antes del build de release).
-- `npm run build`: regenera `public/` (HTML, JSON, discovery, llms.txt, sitemap).
-- Push a `main` → Pages + Vercel sirven el estático.
+- `npm run build`: regenera `public/` (HTML público = mainnet 402 live, JSON de lab, discovery, llms.txt, sitemap, metodología).
+- `npm test`: probe-url + build + contrato de la vista pública.
+- Push a `main` → GitHub Pages. **Cloudflare Pages proyecto `lupaplaza` hay que redeployarlo** para lupaplaza.com.
 
 ---
 

@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "LupaPlaza — catálogo chico y confiable de APIs LatAm pagables por uso vía x402. Código en marketplace-402.",
+  "description": "LupaPlaza — índice de liquidación LatAm: endpoints cobrables ahora (mainnet, 402 live). Código en marketplace-402.",
   "scripts": {
     "build": "node scripts/build.mjs",
     "ingest": "node scripts/ingest.mjs",
@@ -11,7 +11,8 @@
     "start": "node server/index.mjs",
     "probe": "node scripts/probe.mjs",
     "fetch-ar-agent": "node scripts/fetch-ar-agent.mjs",
-    "enrich": "node scripts/enrich-taxonomy.mjs"
+    "enrich": "node scripts/enrich-taxonomy.mjs",
+    "test": "node scripts/lib/probe-url.test.mjs && node scripts/build.mjs && node scripts/lib/public-view.test.mjs"
   },
   "dependencies": {
     "express": "^4.18.2"

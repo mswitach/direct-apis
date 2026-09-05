@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "LupaPlaza API",
-    "description": "Catálogo chico y confiable de APIs LatAm pagables por uso vía x402. El host estático (Vercel / GitHub Pages) solo sirve GET de discovery. Submit, probe en vivo, /api/search y POST /mcp/* corren solo en Express local (`npm run dev` :3402).",
+    "description": "Índice de liquidación LatAm: endpoints cobrables ahora (mainnet, 402 live). El host estático (Cloudflare Pages `lupaplaza`) sirve el índice público y discovery. Submit, probe en vivo, /api/search y POST /mcp/* corren solo en Express local (`npm run dev` :3402).",
     "version": "2.0.0",
     "contact": {
       "name": "Marcelo Switach",
@@ -11,12 +11,8 @@
   },
   "servers": [
     {
-      "url": "https://mswitach.github.io/marketplace-402",
-      "description": "GitHub Pages (estático)"
-    },
-    {
-      "url": "https://marketplace-402.vercel.app",
-      "description": "Vercel (estático, si está conectado)"
+      "url": "https://lupaplaza.com",
+      "description": "Cloudflare Pages (proyecto lupaplaza)"
     },
     {
       "url": "http://localhost:3402",
@@ -27,7 +23,7 @@
     "/.well-known/x402.json": {
       "get": {
         "summary": "Well-known x402 del marketplace",
-        "description": "Metadatos de LupaPlaza: marketplace de APIs pagables en mainnet. Testnet no se anuncia como inventario settleable. En el host estático mcp.live_proxy es local-only.",
+        "description": "Metadatos de LupaPlaza: índice de liquidación (mainnet + 402 live). Testnet no se anuncia como inventario settleable.",
         "responses": {
           "200": {
             "description": "Metadatos del marketplace"
@@ -38,7 +34,7 @@
     "/discovery/resources": {
       "get": {
         "summary": "Listado de recursos (Bazaar-compatible)",
-        "description": "Catálogo estático **solo mainnet** generado en `npm run build`. Testnet/dead/incomplete no entran. También existe /discovery/resources.json.",
+        "description": "Índice público: solo mainnet + 402 live. Testnet/dead/incomplete no entran. También existe /discovery/resources.json.",
         "responses": {
           "200": {
             "description": "Catálogo de APIs"
@@ -59,7 +55,7 @@
     "/api/apis.json": {
       "get": {
         "summary": "Dump honesto del catálogo",
-        "description": "Dump completo con callable honesto (mainnet|testnet|dead|incomplete). /discovery/resources es un subset mainnet-only. En el host estático no hay /api/search.",
+        "description": "Dump de lab con callable honesto. El HTML público y /discovery/resources son mainnet + 402 live. En el host estático no hay /api/search.",
         "responses": {
           "200": {
             "description": "Dataset completo"
@@ -80,10 +76,21 @@
     },
     "/llms.txt": {
       "get": {
-        "summary": "Guía para agentes/LLMs",
+        "summary": "Guía para agentes/LLMs + reglas de inclusión",
         "responses": {
           "200": {
             "description": "Texto plano"
+          }
+        }
+      }
+    },
+    "/metodologia/": {
+      "get": {
+        "summary": "Metodología de inclusión (HTML)",
+        "description": "Mainnet + 402 live + preferencia LatAm/AR. Contraste vs LupaRiel (rieles) y LupaPago (fees).",
+        "responses": {
+          "200": {
+            "description": "Página de inclusión"
           }
         }
       }

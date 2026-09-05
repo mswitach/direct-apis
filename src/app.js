@@ -1,5 +1,5 @@
-// Filtro/orden client-side. El HTML ya trae el listado completo (progressive
-// enhancement): sin JS, las cards no-mainnet vienen hidden — vista default mainnet.
+// Filtro/orden client-side. El HTML ya trae solo el índice público
+// (mainnet + 402 live). No hay tabs de testnet/dead.
 (function () {
   var grid = document.getElementById("grid");
   if (!grid) return;
@@ -10,27 +10,14 @@
   var sortSelect = document.getElementById("sort");
   var clearBtn = document.getElementById("clear-filters");
   var tagFiltersEl = document.getElementById("tag-filters");
-  var callableFiltersEl = document.getElementById("callable-filters");
   var resultCount = document.getElementById("result-count");
   var emptyState = document.getElementById("empty-state");
 
   var activeTags = new Set();
-  var callableFilter = "mainnet";
-
-  function setCallableFilter(value) {
-    callableFilter = value || "mainnet";
-    if (!callableFiltersEl) return;
-    callableFiltersEl.querySelectorAll("[data-callable-filter]").forEach(function (btn) {
-      btn.classList.toggle("is-active", btn.getAttribute("data-callable-filter") === callableFilter);
-    });
-  }
 
   function matches(card) {
     var q = qInput.value.trim().toLowerCase();
     var network = networkSelect.value;
-    var callable = card.getAttribute("data-callable") || "dead";
-
-    if (callableFilter !== "all" && callable !== callableFilter) return false;
 
     if (q) {
       var haystack = card.dataset.name + " " + card.dataset.desc;
@@ -76,8 +63,7 @@
     });
     sorted.forEach(function (card) { grid.appendChild(card); });
 
-    var suffix = callableFilter === "all" ? "" : " (" + callableFilter + ")";
-    resultCount.textContent = visible + (visible === 1 ? " API encontrada" : " APIs encontradas") + suffix;
+    resultCount.textContent = visible + (visible === 1 ? " endpoint cobrable" : " endpoints cobrables");
     emptyState.hidden = visible !== 0;
   }
 
@@ -85,18 +71,9 @@
   networkSelect.addEventListener("change", apply);
   sortSelect.addEventListener("change", apply);
 
-  if (callableFiltersEl) {
-    callableFiltersEl.addEventListener("click", function (e) {
-      var btn = e.target.closest("[data-callable-filter]");
-      if (!btn) return;
-      setCallableFilter(btn.getAttribute("data-callable-filter"));
-      apply();
-    });
-  }
-
   tagFiltersEl.addEventListener("click", function (e) {
     var btn = e.target.closest(".filter-chip");
-    if (!btn || btn.hasAttribute("data-callable-filter")) return;
+    if (!btn) return;
     var tag = btn.dataset.filterTag;
     if (!tag) return;
     if (activeTags.has(tag)) {
@@ -117,10 +94,8 @@
     tagFiltersEl.querySelectorAll(".filter-chip.is-active").forEach(function (b) {
       b.classList.remove("is-active");
     });
-    setCallableFilter("mainnet");
     apply();
   });
 
-  setCallableFilter("mainnet");
   apply();
 })();

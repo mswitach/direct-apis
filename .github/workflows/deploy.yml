@@ -22,10 +22,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      # Orden de release: `npm run probe` (o `npm run fetch-ar-agent`) se corre
-      # en la máquina de mantenimiento y se commitea data/apis.json. CI no
-      # probea en vivo: solo emite el public/ estático (discovery + HTML).
-      - run: node scripts/build.mjs
+      # Orden de release: `npm run probe` se corre en mantenimiento y se
+      # commitea data/apis.json. CI no probea: test + public/ estático.
+      # Host de producto: Cloudflare Pages `lupaplaza` (lupaplaza.com).
+      - run: npm test
+        env:
+          SITE_URL: https://lupaplaza.com
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
