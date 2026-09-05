@@ -3,6 +3,7 @@ name: Build and deploy site
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch: {}
 
 permissions:
@@ -11,7 +12,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -28,11 +29,13 @@ jobs:
       - run: npm test
         env:
           SITE_URL: https://lupaplaza.com
-      - uses: actions/upload-pages-artifact@v3
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: public
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
