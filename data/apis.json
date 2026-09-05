@@ -1245,7 +1245,7 @@
       "id": "latampulse-report",
       "name": "LatAmPulse report",
       "category": "Finanzas / LatAm",
-      "description": "Informe LatAm (FX BRL/ARS/COP/MXN/CLP/PEN, dólar blue AR, commodities). $0.05 USDC Base mainnet.",
+      "description": "Informe LatAm (FX BRL/ARS/COP/MXN/CLP/PEN, dólar blue AR, commodities). $0.05 USDC Base mainnet. Tx de liquidación evidenciada: 0xa0e72de7ca7d7355b446d304d2923ce3df7233f0d31802e8a753c6a27b0d6122.",
       "price_display": "$0.05 USDC",
       "network": "eip155:8453",
       "protocol": "x402",
@@ -1279,6 +1279,7 @@
       "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       "amount": "50000",
       "pay_to": "0x52Ab53912D37759B2ad364f22dD06B16714b6C06",
+      "evidence": "0xa0e72de7ca7d7355b446d304d2923ce3df7233f0d31802e8a753c6a27b0d6122",
       "endpoints": [
         {
           "path": "/report",
@@ -1300,7 +1301,7 @@
       "id": "latamref-ar-policy-rate",
       "name": "latamref AR policy-rate",
       "category": "Finanzas / BCRA / Argentina",
-      "description": "Tasa de política monetaria BCRA (Argentina) vía latamref.dev. $0.005 USDC en Base mainnet. Host pagable: latamref.dev (latamref.com no resuelve DNS).",
+      "description": "Tasa de política monetaria BCRA (Argentina) vía latamref.dev. $0.005 USDC en Base mainnet. Host pagable: latamref.dev (latamref.com no resuelve DNS). Tx de liquidación evidenciada: 0x2347f1ac8627bae2db06c17ba22708395936447584649829d47d944877d67699.",
       "price_display": "$0.005 USDC",
       "network": "eip155:8453",
       "protocol": "x402",
@@ -1328,6 +1329,7 @@
       "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       "amount": "5000",
       "pay_to": "0x1F0409ccD20A2fb497d4DeCeF4E17e9d0688FeA6",
+      "evidence": "0x2347f1ac8627bae2db06c17ba22708395936447584649829d47d944877d67699",
       "endpoints": [
         {
           "path": "/v1/ar/policy-rate",
@@ -1349,7 +1351,7 @@
       "id": "latamref-ar-vat",
       "name": "latamref AR vat",
       "category": "Finanzas / IVA / Argentina",
-      "description": "Alícuotas de IVA (VAT) de Argentina vía latamref.dev. $0.005 USDC en Base mainnet. Host pagable: latamref.dev (latamref.com no resuelve DNS).",
+      "description": "Alícuotas de IVA (VAT) de Argentina vía latamref.dev. $0.005 USDC en Base mainnet. Host pagable: latamref.dev (latamref.com no resuelve DNS). Tx de liquidación evidenciada: 0xb9c4ef88024ee31a30bd7a689255f100a7f9fd44de5d6e9ed875e9f2f792a88f.",
       "price_display": "$0.005 USDC",
       "network": "eip155:8453",
       "protocol": "x402",
@@ -1376,6 +1378,7 @@
       "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       "amount": "5000",
       "pay_to": "0x1F0409ccD20A2fb497d4DeCeF4E17e9d0688FeA6",
+      "evidence": "0xb9c4ef88024ee31a30bd7a689255f100a7f9fd44de5d6e9ed875e9f2f792a88f",
       "endpoints": [
         {
           "path": "/v1/ar/vat",
@@ -1397,7 +1400,7 @@
       "id": "latamref-ar-vat-registration-threshold",
       "name": "latamref AR vat-registration-threshold",
       "category": "Finanzas / IVA / Argentina",
-      "description": "Umbral de inscripción al IVA (VAT registration threshold) de Argentina vía latamref.dev. $0.005 USDC en Base mainnet. Host pagable: latamref.dev (latamref.com no resuelve DNS).",
+      "description": "Umbral de inscripción al IVA (VAT registration threshold) de Argentina vía latamref.dev. $0.005 USDC en Base mainnet. Host pagable: latamref.dev (latamref.com no resuelve DNS). Tx de liquidación evidenciada: 0xc816b66f151cda204616d3bf6368a7e44abd48b52c632929b84e9a2ea66af1fb.",
       "price_display": "$0.005 USDC",
       "network": "eip155:8453",
       "protocol": "x402",
@@ -1425,6 +1428,7 @@
       "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       "amount": "5000",
       "pay_to": "0x1F0409ccD20A2fb497d4DeCeF4E17e9d0688FeA6",
+      "evidence": "0xc816b66f151cda204616d3bf6368a7e44abd48b52c632929b84e9a2ea66af1fb",
       "endpoints": [
         {
           "path": "/v1/ar/vat-registration-threshold",
@@ -1446,7 +1450,7 @@
       "id": "toolrail-dolar-argentina",
       "name": "Toolrail dólar Argentina",
       "category": "Finanzas / Tipo de cambio / Argentina",
-      "description": "Cotizaciones dólar Argentina vía Toolrail, pagable x402 Base. $0.007 USDC en Base mainnet (eip155:8453).",
+      "description": "Cotizaciones dólar Argentina vía Toolrail, pagable x402 Base. $0.007 USDC en Base mainnet (eip155:8453). Tx de liquidación evidenciada: 0x9034b42782a85736691173eb25fa289444174b90667054f3e4171be9d38e6cc8.",
       "price_display": "$0.007 USDC",
       "network": "eip155:8453",
       "protocol": "x402",
@@ -1476,6 +1480,7 @@
       "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       "amount": "7000",
       "pay_to": "0xC6E6138dAAc78CeC93d491b4581Afa1a61B98a17",
+      "evidence": "0x9034b42782a85736691173eb25fa289444174b90667054f3e4171be9d38e6cc8",
       "endpoints": [
         {
           "path": "/latam/dolar-argentina",

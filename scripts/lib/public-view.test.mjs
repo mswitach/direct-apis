@@ -78,6 +78,35 @@ assert.ok(
   existsSync(join(OUT, "apis", "lupapago-fee-mobbex", "index.html")),
   "lupapago-fee-mobbex tiene que seguir publicado"
 );
+
+const MOBBEX_TX = "0x645c71d3bb855826c531187f79d4dac67590ec65c2fdcfc8c5353309afa890ee";
+const EVIDENCE_BY_ID = {
+  "lupapago-fee-mobbex": MOBBEX_TX,
+  "latampulse-report": "0xa0e72de7ca7d7355b446d304d2923ce3df7233f0d31802e8a753c6a27b0d6122",
+  "latamref-ar-policy-rate": "0x2347f1ac8627bae2db06c17ba22708395936447584649829d47d944877d67699",
+  "latamref-ar-vat": "0xb9c4ef88024ee31a30bd7a689255f100a7f9fd44de5d6e9ed875e9f2f792a88f",
+  "latamref-ar-vat-registration-threshold":
+    "0xc816b66f151cda204616d3bf6368a7e44abd48b52c632929b84e9a2ea66af1fb",
+  "toolrail-dolar-argentina": "0x9034b42782a85736691173eb25fa289444174b90667054f3e4171be9d38e6cc8",
+};
+
+for (const [id, hash] of Object.entries(EVIDENCE_BY_ID)) {
+  const listing = catalog.apis.find((a) => a.id === id);
+  assert.ok(listing, `${id} existe en el catálogo`);
+  assert.equal(listing.evidence, hash, `${id} tiene el hash de evidencia`);
+  assert.ok(
+    listing.description.includes(`Tx de liquidación evidenciada: ${hash}.`),
+    `${id} nombra la tx en description`
+  );
+  if (id !== "lupapago-fee-mobbex") {
+    assert.equal(listing.date_updated, "2026-09-05", `${id} date_updated = 2026-09-05`);
+  }
+  const detail = readFileSync(join(OUT, "apis", id, "index.html"), "utf-8");
+  assert.ok(detail.includes("Evidencia (tx)"), `${id} muestra fila Evidencia (tx)`);
+  assert.ok(detail.includes(`https://basescan.org/tx/${hash}`), `${id} linkea Basescan`);
+  assert.ok(detail.includes("Basescan ↗"), `${id} tiene botón Basescan`);
+}
+
 assert.ok(!existsSync(join(OUT, "apis", "apify", "index.html")), "apify (dead) no tiene HTML público");
 assert.ok(!existsSync(join(OUT, "apis", "ar-agent-fx-usd", "index.html")), "AR Agent no tiene HTML público");
 
