@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-04",
+  "updated_at": "2026-09-05",
   "apis": [
     {
       "id": "apify",
@@ -1238,6 +1238,258 @@
           "payTo": "0x6fc99c8a5334e00f6fce854700959930a3c62dbc",
           "callable": "mainnet",
           "probed_at": "2026-09-04T14:54:51.118Z"
+        }
+      ]
+    },
+    {
+      "id": "latampulse-report",
+      "name": "LatAmPulse report",
+      "category": "Finanzas / LatAm",
+      "description": "Informe LatAm (FX BRL/ARS/COP/MXN/CLP/PEN, dólar blue AR, commodities). $0.05 USDC Base mainnet.",
+      "price_display": "$0.05 USDC",
+      "network": "eip155:8453",
+      "protocol": "x402",
+      "url": "https://latam.lonestaroracle.xyz",
+      "source_url": "https://latam.lonestaroracle.xyz/report",
+      "date_detected": "2026-09-05",
+      "date_updated": "2026-09-05",
+      "status": "active",
+      "taxonomy": [
+        "fx.latam",
+        "fx.ar.blue",
+        "macro.latam",
+        "commodities",
+        "finanzas"
+      ],
+      "country": [
+        "AR",
+        "BR",
+        "MX",
+        "CO",
+        "CL",
+        "PE"
+      ],
+      "endpoint_url": "https://latam.lonestaroracle.xyz/report",
+      "callable": "mainnet",
+      "extensions": [],
+      "is_free_tier": false,
+      "http_status": 402,
+      "is_402": true,
+      "last_probed_at": "2026-09-05T03:40:18.198Z",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "amount": "50000",
+      "pay_to": "0x52Ab53912D37759B2ad364f22dD06B16714b6C06",
+      "endpoints": [
+        {
+          "path": "/report",
+          "method": "GET",
+          "description": "Informe LatAm (FX BRL/ARS/COP/MXN/CLP/PEN, dólar blue AR, commodities).",
+          "price": "$0.05 USDC",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "50000",
+          "payTo": "0x52Ab53912D37759B2ad364f22dD06B16714b6C06",
+          "callable": "mainnet",
+          "probed_at": "2026-09-05T03:40:18.198Z"
+        }
+      ]
+    },
+    {
+      "id": "latamref-ar-policy-rate",
+      "name": "latamref AR policy-rate",
+      "category": "Finanzas / BCRA / Argentina",
+      "description": "Tasa de política monetaria BCRA (Argentina) vía latamref.dev. $0.005 USDC en Base mainnet. Host pagable: latamref.dev (latamref.com no resuelve DNS).",
+      "price_display": "$0.005 USDC",
+      "network": "eip155:8453",
+      "protocol": "x402",
+      "url": "https://latamref.dev",
+      "source_url": "https://latamref.dev/v1/ar/policy-rate",
+      "date_detected": "2026-09-05",
+      "date_updated": "2026-09-05",
+      "status": "active",
+      "taxonomy": [
+        "bcra.policy-rate",
+        "bcra",
+        "policy.rate.ar",
+        "argentina"
+      ],
+      "country": [
+        "AR"
+      ],
+      "endpoint_url": "https://latamref.dev/v1/ar/policy-rate",
+      "callable": "mainnet",
+      "extensions": [],
+      "is_free_tier": false,
+      "http_status": 402,
+      "is_402": true,
+      "last_probed_at": "2026-09-05T03:40:19.481Z",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "amount": "5000",
+      "pay_to": "0x1F0409ccD20A2fb497d4DeCeF4E17e9d0688FeA6",
+      "endpoints": [
+        {
+          "path": "/v1/ar/policy-rate",
+          "method": "GET",
+          "description": "Tasa de política monetaria BCRA (Argentina).",
+          "price": "$0.005 USDC",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "5000",
+          "payTo": "0x1F0409ccD20A2fb497d4DeCeF4E17e9d0688FeA6",
+          "callable": "mainnet",
+          "probed_at": "2026-09-05T03:40:19.481Z"
+        }
+      ]
+    },
+    {
+      "id": "latamref-ar-vat",
+      "name": "latamref AR vat",
+      "category": "Finanzas / IVA / Argentina",
+      "description": "Alícuotas de IVA (VAT) de Argentina vía latamref.dev. $0.005 USDC en Base mainnet. Host pagable: latamref.dev (latamref.com no resuelve DNS).",
+      "price_display": "$0.005 USDC",
+      "network": "eip155:8453",
+      "protocol": "x402",
+      "url": "https://latamref.dev",
+      "source_url": "https://latamref.dev/v1/ar/vat",
+      "date_detected": "2026-09-05",
+      "date_updated": "2026-09-05",
+      "status": "active",
+      "taxonomy": [
+        "vat.ar",
+        "iva.ar",
+        "argentina"
+      ],
+      "country": [
+        "AR"
+      ],
+      "endpoint_url": "https://latamref.dev/v1/ar/vat",
+      "callable": "mainnet",
+      "extensions": [],
+      "is_free_tier": false,
+      "http_status": 402,
+      "is_402": true,
+      "last_probed_at": "2026-09-05T03:40:19.822Z",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "amount": "5000",
+      "pay_to": "0x1F0409ccD20A2fb497d4DeCeF4E17e9d0688FeA6",
+      "endpoints": [
+        {
+          "path": "/v1/ar/vat",
+          "method": "GET",
+          "description": "Alícuotas de IVA (VAT) de Argentina.",
+          "price": "$0.005 USDC",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "5000",
+          "payTo": "0x1F0409ccD20A2fb497d4DeCeF4E17e9d0688FeA6",
+          "callable": "mainnet",
+          "probed_at": "2026-09-05T03:40:19.822Z"
+        }
+      ]
+    },
+    {
+      "id": "latamref-ar-vat-registration-threshold",
+      "name": "latamref AR vat-registration-threshold",
+      "category": "Finanzas / IVA / Argentina",
+      "description": "Umbral de inscripción al IVA (VAT registration threshold) de Argentina vía latamref.dev. $0.005 USDC en Base mainnet. Host pagable: latamref.dev (latamref.com no resuelve DNS).",
+      "price_display": "$0.005 USDC",
+      "network": "eip155:8453",
+      "protocol": "x402",
+      "url": "https://latamref.dev",
+      "source_url": "https://latamref.dev/v1/ar/vat-registration-threshold",
+      "date_detected": "2026-09-05",
+      "date_updated": "2026-09-05",
+      "status": "active",
+      "taxonomy": [
+        "vat.ar.registration-threshold",
+        "vat.ar",
+        "iva.ar",
+        "argentina"
+      ],
+      "country": [
+        "AR"
+      ],
+      "endpoint_url": "https://latamref.dev/v1/ar/vat-registration-threshold",
+      "callable": "mainnet",
+      "extensions": [],
+      "is_free_tier": false,
+      "http_status": 402,
+      "is_402": true,
+      "last_probed_at": "2026-09-05T03:40:20.160Z",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "amount": "5000",
+      "pay_to": "0x1F0409ccD20A2fb497d4DeCeF4E17e9d0688FeA6",
+      "endpoints": [
+        {
+          "path": "/v1/ar/vat-registration-threshold",
+          "method": "GET",
+          "description": "Umbral de inscripción al IVA (VAT registration threshold) de Argentina.",
+          "price": "$0.005 USDC",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "5000",
+          "payTo": "0x1F0409ccD20A2fb497d4DeCeF4E17e9d0688FeA6",
+          "callable": "mainnet",
+          "probed_at": "2026-09-05T03:40:20.160Z"
+        }
+      ]
+    },
+    {
+      "id": "toolrail-dolar-argentina",
+      "name": "Toolrail dólar Argentina",
+      "category": "Finanzas / Tipo de cambio / Argentina",
+      "description": "Cotizaciones dólar Argentina vía Toolrail, pagable x402 Base. $0.007 USDC en Base mainnet (eip155:8453).",
+      "price_display": "$0.007 USDC",
+      "network": "eip155:8453",
+      "protocol": "x402",
+      "url": "https://toolrail.dev",
+      "source_url": "https://toolrail.dev/latam/dolar-argentina",
+      "date_detected": "2026-09-05",
+      "date_updated": "2026-09-05",
+      "status": "active",
+      "taxonomy": [
+        "fx.ar.oficial",
+        "fx.ar.blue",
+        "fx.ar.bolsa",
+        "fx.ar.mep",
+        "dolar",
+        "argentina"
+      ],
+      "country": [
+        "AR"
+      ],
+      "endpoint_url": "https://toolrail.dev/latam/dolar-argentina",
+      "callable": "mainnet",
+      "extensions": [],
+      "is_free_tier": false,
+      "http_status": 402,
+      "is_402": true,
+      "last_probed_at": "2026-09-05T03:40:20.288Z",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "amount": "7000",
+      "pay_to": "0xC6E6138dAAc78CeC93d491b4581Afa1a61B98a17",
+      "endpoints": [
+        {
+          "path": "/latam/dolar-argentina",
+          "method": "GET",
+          "description": "Cotizaciones dólar Argentina vía Toolrail, pagable x402 Base.",
+          "price": "$0.007 USDC",
+          "http_status": 402,
+          "is_402": true,
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "7000",
+          "payTo": "0xC6E6138dAAc78CeC93d491b4581Afa1a61B98a17",
+          "callable": "mainnet",
+          "probed_at": "2026-09-05T03:40:20.288Z"
         }
       ]
     }

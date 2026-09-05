@@ -17,10 +17,20 @@ assert.equal(isPublicListing({ callable: "testnet", is_402: true }), false);
 assert.equal(isPublicListing({ callable: "dead", is_402: false }), false);
 assert.equal(isPublicListing(null), false);
 
+assert.equal(live.length, 6, "el índice público tiene 6 mainnet (1 LupaPago + 5)");
 assert.ok(
   live.some((a) => a.id === "lupapago-fee-mobbex"),
   "la semilla mainnet lupapago-fee-mobbex tiene que ser pública"
 );
+for (const id of [
+  "latampulse-report",
+  "latamref-ar-policy-rate",
+  "latamref-ar-vat",
+  "latamref-ar-vat-registration-threshold",
+  "toolrail-dolar-argentina",
+]) {
+  assert.ok(live.some((a) => a.id === id), `${id} tiene que ser público`);
+}
 assert.ok(
   live.every((a) => a.callable === "mainnet" && a.is_402 === true),
   "el índice público solo admite mainnet + 402 live"
@@ -49,6 +59,11 @@ assert.ok(!/href="https:\/\/github.com\/mswitach\/marketplace-402"/.test(home), 
 assert.ok(!/playground|sandbox/i.test(home), "sin playground/sandbox");
 assert.ok(home.includes(`>${live.length}<`), "el conteo público es el mainnet real");
 assert.ok(home.includes("/apis/lupapago-fee-mobbex/"), "link a la semilla mainnet");
+assert.ok(home.includes("/apis/latampulse-report/"), "link a LatAmPulse");
+assert.ok(home.includes("/apis/latamref-ar-policy-rate/"), "link a latamref policy-rate");
+assert.ok(home.includes("/apis/toolrail-dolar-argentina/"), "link a Toolrail dólar");
+assert.ok(home.includes("latamref.dev"), "latamref se lista en .dev");
+assert.ok(!/https?:\/\/latamref\.com/.test(home), "latamref.com no resuelve DNS; no listar ese host");
 assert.ok(home.includes("/metodologia/"), "link a metodología");
 
 const apiDirs = existsSync(join(OUT, "apis"))
@@ -88,12 +103,20 @@ assert.ok(llms.includes(SITE_DESC.split(":")[0]));
 const sitemap = readFileSync(join(OUT, "sitemap.xml"), "utf-8");
 assert.ok(sitemap.includes("/metodologia/"));
 assert.ok(sitemap.includes("/apis/lupapago-fee-mobbex/"));
+assert.ok(sitemap.includes("/apis/latampulse-report/"));
+assert.ok(sitemap.includes("/apis/latamref-ar-vat/"));
+assert.ok(sitemap.includes("/apis/toolrail-dolar-argentina/"));
 assert.ok(!sitemap.includes("/apis/apify/"));
 assert.ok(!sitemap.includes("/apis/ar-agent-"));
 
 const discovery = JSON.parse(readFileSync(join(OUT, "discovery", "resources.json"), "utf-8"));
+assert.equal(discovery.count, 6, "discovery público = 6 mainnet");
 assert.equal(discovery.count, live.length);
 assert.ok(discovery.resources.every((r) => r.callable === "mainnet" && r.is_402 === true));
+assert.ok(
+  !JSON.stringify(discovery).includes("latamref.com/"),
+  "discovery no apunta a latamref.com"
+);
 
 assert.ok(existsSync(join(OUT, "_headers")), "Cloudflare Pages _headers");
 
