@@ -3,6 +3,7 @@ name: Build and deploy site
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch: {}
 
 permissions:
@@ -11,7 +12,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -22,15 +23,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      # Orden de release: `npm run probe` (o `npm run fetch-ar-agent`) se corre
-      # en la máquina de mantenimiento y se commitea data/apis.json. CI no
-      # probea en vivo: solo emite el public/ estático (discovery + HTML).
-      - run: node scripts/build.mjs
-      - uses: actions/upload-pages-artifact@v3
+      # Orden de release: `npm run probe` se corre en mantenimiento y se
+      # commitea data/apis.json. CI no probea: test + public/ estático.
+      # Host de producto: Cloudflare Pages `lupaplaza` (lupaplaza.com).
+      - run: npm test
+        env:
+          SITE_URL: https://lupaplaza.com
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: public
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

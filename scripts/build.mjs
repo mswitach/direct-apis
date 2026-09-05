@@ -12,31 +12,28 @@ import { dirname, join } from "node:path";
 import { slugify, categoryTags, parsePrice, isRecent, escapeHtml } from "./lib/normalize.mjs";
 import {
   SITE_NAME,
+  SITE_HEADLINE,
   SITE_DESC,
   SITE_VERSION,
   REPO_URL,
   CONTACT_NAME,
   LOCAL_ORIGIN,
   LOCAL_PORT,
+  PRODUCTION_ORIGIN,
   MCP_LIVE_NOTE,
   discoveryCatalog,
   wellKnownDocument,
   mcpManifestDocument,
+  publicListings,
 } from "./lib/site.mjs";
 import { CALLABLE, formatNetworkDisplay } from "./lib/probe-url.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const OUT = join(ROOT, "public");
-// SITE_URL se resuelve en este orden: variable de entorno explícita (para
-// fijar el dominio propio una vez conectado) → dominio de producción que
-// Vercel inyecta solo en cada build → fallback a GitHub Pages, que sigue
-// activo como espejo secundario y sirve el repo como "project site" bajo
-// /marketplace-402/ en vez de en la raíz del dominio.
-const SITE_URL =
-  process.env.SITE_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`) ||
-  "https://mswitach.github.io/marketplace-402";
+// Dominio de producto: lupaplaza.com (Cloudflare Pages, proyecto `lupaplaza`).
+// SITE_URL se puede overridear en CI/preview.
+const SITE_URL = process.env.SITE_URL || PRODUCTION_ORIGIN;
 // Todo link interno lleva este prefijo — queda vacío en Vercel (sirve en la
 // raíz) y en "/marketplace-402" en GitHub Pages, derivado automáticamente de la
 // URL de arriba.
@@ -97,6 +94,7 @@ function siteHeader(active) {
   </a>
   <nav class="topnav">
     <a href="${BASE_PATH}/" class="${active === "home" ? "is-active" : ""}">Listado</a>
+    <a href="${BASE_PATH}/metodologia/" class="${active === "metodologia" ? "is-active" : ""}">Metodología</a>
     <a href="${BASE_PATH}/api/apis.json">JSON</a>
     <a href="${BASE_PATH}/llms.txt">llms.txt</a>
   </nav>
@@ -105,10 +103,11 @@ function siteHeader(active) {
 
 function siteFoot(updatedAt) {
   return `<footer class="sitefoot">
-  <p><strong>${SITE_NAME}</strong> — catálogo x402 de APIs LatAm pagables por uso.</p>
-  <p>Discovery para agentes (estático): <a href="${BASE_PATH}/.well-known/x402.json">/.well-known/x402.json</a> · <a href="${BASE_PATH}/discovery/resources">/discovery/resources</a> · <a href="${BASE_PATH}/discovery/resources.json">resources.json</a> · <a href="${BASE_PATH}/openapi.json">openapi.json</a> · <a href="${BASE_PATH}/mcp/manifest.json">mcp/manifest.json</a></p>
-  <p>Datos abiertos, sin API key: <a href="${BASE_PATH}/api/apis.json">apis.json</a> · <a href="${BASE_PATH}/api/apis.ndjson">apis.ndjson</a> · <a href="${BASE_PATH}/llms.txt">llms.txt</a></p>
-  <p>Submit, probe en vivo y MCP call-through: solo local <span class="mono">npm run dev</span> :${LOCAL_PORT}. Relevamiento curado a mano. Última actualización: <span class="mono">${updatedAt}</span>.</p>
+  <p><strong>${SITE_NAME}</strong> — índice de liquidación LatAm: ${SITE_HEADLINE.toLowerCase()}.</p>
+  <p>No es <strong>LupaRiel</strong> (mapa de rieles) ni <strong>LupaPago</strong> (fees de PSP). Inclusión: <a href="${BASE_PATH}/metodologia/">metodología</a>.</p>
+  <p>Discovery (solo mainnet 402 live): <a href="${BASE_PATH}/.well-known/x402.json">/.well-known/x402.json</a> · <a href="${BASE_PATH}/discovery/resources">/discovery/resources</a> · <a href="${BASE_PATH}/openapi.json">openapi.json</a></p>
+  <p>Dump de lab (incluye testnet/dead, no es el índice público): <a href="${BASE_PATH}/api/apis.json">apis.json</a> · <a href="${BASE_PATH}/llms.txt">llms.txt</a></p>
+  <p>Última actualización: <span class="mono">${updatedAt}</span>.</p>
 </footer>`;
 }
 
@@ -148,21 +147,16 @@ function apiCard(api) {
   const countryBadges = api.country && api.country.length > 0
     ? api.country.map((c) => `<span class="badge-country">${escapeHtml(c)}</span>`).join("")
     : "";
-  const callable = api.callable || CALLABLE.DEAD;
-  const { className: callableClass, label: callableLabel } = callableMeta(callable);
-  const hidden = callable !== CALLABLE.MAINNET ? " hidden" : "";
-  const testnetNote = callable === CALLABLE.TESTNET
-    ? `<p class="card-warn">Testnet — no es USDC de producción / no se liquida en mainnet.</p>`
-    : "";
+  const { className: callableClass } = callableMeta(CALLABLE.MAINNET);
 
-  return `<article class="card"${hidden}
+  return `<article class="card"
   data-name="${escapeHtml(api.name.toLowerCase())}"
   data-desc="${escapeHtml(api.description.toLowerCase())}"
   data-tags="${escapeHtml(api.tags.join("|").toLowerCase())}"
   data-network="${escapeHtml((api.network || "").toLowerCase())}"
   data-price-min="${api.price.amountMin ?? ""}"
   data-new="${api.isNew ? "1" : "0"}"
-  data-callable="${escapeHtml(callable)}"
+  data-callable="mainnet"
   data-country="${escapeHtml((api.country || []).join("|").toLowerCase())}"
   data-taxonomy="${escapeHtml((api.taxonomy || []).join("|").toLowerCase())}">
   <div class="card-top">
@@ -170,20 +164,19 @@ function apiCard(api) {
     <div class="card-badges">
       ${countryBadges}
       ${api.isNew ? '<span class="badge-new">nueva hoy</span>' : ""}
-      <span class="badge-callable ${callableClass}">${escapeHtml(callableLabel)}</span>
+      <span class="badge-callable ${callableClass}">402 live</span>
     </div>
   </div>
   <div class="card-tags">${tagsHtml}</div>
   ${taxonomyHtml ? `<div class="card-taxonomy">${taxonomyHtml}</div>` : ""}
   <p class="card-desc">${escapeHtml(api.description)}</p>
-  ${testnetNote}
   <div class="card-foot">
     <span class="price mono">${priceLabel(api)}</span>
     <span class="network mono">${escapeHtml(networkDisplay(api))}</span>
   </div>
   <div class="card-probe">
     <span class="probe-time mono">probe ${escapeHtml(formatProbedAt(api.last_probed_at))}</span>
-    ${api.is_402 ? `<span class="probe-402 mono">HTTP 402</span>` : api.http_status != null ? `<span class="probe-http mono">HTTP ${escapeHtml(String(api.http_status))}</span>` : `<span class="probe-http mono">sin HTTP</span>`}
+    <span class="probe-402 mono">HTTP 402</span>
   </div>
 </article>`;
 }
@@ -198,9 +191,10 @@ function countable(apis) {
 }
 
 function renderIndex({ updatedAt, apis }) {
-  const allTags = [...new Set(apis.flatMap((a) => a.tags))].sort((a, b) => a.localeCompare(b, "es"));
-  const allNetworks = [...new Set(apis.map((a) => a.network).filter(Boolean))].sort();
-  const counts = countable(apis);
+  const live = publicListings(apis);
+  const allTags = [...new Set(live.flatMap((a) => a.tags))].sort((a, b) => a.localeCompare(b, "es"));
+  const allNetworks = [...new Set(live.map((a) => a.network).filter(Boolean))].sort();
+  const liveCount = live.length;
 
   const tagChips = allTags
     .map((t) => `<button type="button" class="filter-chip" data-filter-tag="${escapeHtml(t.toLowerCase())}">${escapeHtml(t)}</button>`)
@@ -210,7 +204,7 @@ function renderIndex({ updatedAt, apis }) {
     .map((n) => `<option value="${escapeHtml(n.toLowerCase())}">${escapeHtml(formatNetworkDisplay(n) || n)}</option>`)
     .join("");
 
-  const cards = apis.map(apiCard).join("\n");
+  const cards = live.map(apiCard).join("\n");
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -218,35 +212,26 @@ function renderIndex({ updatedAt, apis }) {
     name: SITE_NAME,
     description: SITE_DESC,
     url: `${SITE_URL}/`,
-    creator: { "@type": "Person", name: CONTACT_NAME, url: "https://lupaplaza.com/" },
-    keywords: ["x402", "LatAm", "API", "agentes", "pagos por uso"],
+    creator: { "@type": "Person", name: CONTACT_NAME, url: PRODUCTION_ORIGIN + "/" },
+    keywords: ["x402", "LatAm", "liquidación", "agentes", "mainnet", "402"],
     isAccessibleForFree: true,
-    dataset: `${SITE_URL}/api/apis.json`,
+    dataset: `${SITE_URL}/discovery/resources.json`,
   };
 
   const body = `${siteHeader("home")}
 <main class="page">
   <section class="hero">
-    <p class="eyebrow">${SITE_NAME} · protocolo x402</p>
-    <h1>Catálogo chico de APIs LatAm que un agente paga con x402</h1>
-    <p class="dek">${SITE_DESC} Vista por defecto: solo mainnet. Testnet (incl. AR Agent en Base Sepolia) no se presenta como USDC de producción.</p>
+    <p class="eyebrow">${SITE_NAME} · índice de liquidación LatAm</p>
+    <h1>${SITE_HEADLINE}</h1>
+    <p class="dek">Qué <strong>URL</strong> puede pagar un agente <strong>ahora</strong> (mainnet, 402 live) y llevarse los datos. Preferimos listings útiles para LatAm y Argentina. No somos un mapa de rieles (eso es LupaRiel) ni un directorio de fees de PSP (eso es LupaPago). Tampoco un dump global de x402. <a href="${BASE_PATH}/metodologia/">Cómo entra un endpoint</a>.</p>
     <dl class="stats">
-      <div><dt>Mainnet (402)</dt><dd class="mono">${counts.mainnet}</dd></div>
-      <div><dt>Testnet</dt><dd class="mono">${counts.testnet}</dd></div>
-      <div><dt>Dead / incomplete</dt><dd class="mono">${counts.dead + counts.incomplete}</dd></div>
+      <div><dt>Cobrables ahora (mainnet 402)</dt><dd class="mono">${liveCount}</dd></div>
       <div><dt>Última actualización</dt><dd class="mono">${updatedAt}</dd></div>
     </dl>
   </section>
 
   <section class="filters" aria-label="Filtros">
     <input type="search" id="q" class="search" placeholder="Buscar por nombre o descripción…" aria-label="Buscar">
-    <div class="filter-row" id="callable-filters" role="group" aria-label="Filtrar por callable">
-      <button type="button" class="filter-chip is-active" data-callable-filter="mainnet">mainnet</button>
-      <button type="button" class="filter-chip" data-callable-filter="testnet">testnet</button>
-      <button type="button" class="filter-chip" data-callable-filter="dead">dead</button>
-      <button type="button" class="filter-chip" data-callable-filter="incomplete">incomplete</button>
-      <button type="button" class="filter-chip" data-callable-filter="all">todas</button>
-    </div>
     <div class="filter-row">
       <select id="network-filter" aria-label="Filtrar por red de pago">
         <option value="">Toda red de pago</option>
@@ -258,24 +243,24 @@ function renderIndex({ updatedAt, apis }) {
         <option value="price-desc">Ordenar: precio (mayor primero)</option>
         <option value="new">Ordenar: más nuevas primero</option>
       </select>
-      <button type="button" id="clear-filters" class="btn-ghost">Limpiar (mainnet)</button>
+      <button type="button" id="clear-filters" class="btn-ghost">Limpiar</button>
     </div>
     <div class="chip-row" id="tag-filters">${tagChips}</div>
   </section>
 
-  <p class="result-count" id="result-count" aria-live="polite">${counts.mainnet} ${counts.mainnet === 1 ? "API encontrada" : "APIs encontradas"} (mainnet)</p>
+  <p class="result-count" id="result-count" aria-live="polite">${liveCount} ${liveCount === 1 ? "endpoint cobrable" : "endpoints cobrables"}</p>
 
   <section class="grid" id="grid">
     ${cards}
   </section>
 
-  <p class="empty-state" id="empty-state"${counts.mainnet === 0 ? "" : " hidden"}>No hay APIs que matcheen esos filtros. La vista default es mainnet (hoy: ${counts.mainnet}). Testnet no es inventario de liquidación.</p>
+  <p class="empty-state" id="empty-state"${liveCount === 0 ? "" : " hidden"}>No hay endpoints cobrables que matcheen esos filtros. El índice público solo muestra 402 live en mainnet (hoy: ${liveCount}).</p>
 </main>
 ${siteFoot(updatedAt)}
 <script src="${BASE_PATH}/app.js"></script>`;
 
   return layout({
-    title: `${SITE_NAME} — APIs pagables por uso vía x402`,
+    title: `${SITE_NAME} — ${SITE_HEADLINE}`,
     description: SITE_DESC,
     canonical: `${SITE_URL}/`,
     body,
@@ -315,7 +300,7 @@ function renderDetail(api) {
       <div class="ledger-row"><dt>Red de pago</dt><dd class="mono">${escapeHtml(networkDisplay(api))}</dd></div>
       <div class="ledger-row"><dt>Protocolo</dt><dd class="mono">${escapeHtml(api.protocol)}</dd></div>
       <div class="ledger-row"><dt>Categoría</dt><dd>${escapeHtml(api.category)}</dd></div>
-      ${(() => { const m = callableMeta(api.callable || CALLABLE.DEAD); const note = m.label === "testnet" ? " — no es liquidación mainnet / no es USDC de producción" : ""; return `<div class="ledger-row"><dt>Callable</dt><dd><span class="status-badge ${m.className}">${escapeHtml(m.label)}</span>${escapeHtml(note)}</dd></div>`; })()}
+      ${(() => { const m = callableMeta(CALLABLE.MAINNET); return `<div class="ledger-row"><dt>Callable</dt><dd><span class="status-badge ${m.className}">mainnet · 402 live</span></dd></div>`; })()}
       <div class="ledger-row"><dt>HTTP / 402</dt><dd class="mono">${api.http_status == null ? "—" : escapeHtml(String(api.http_status))}${api.is_402 ? " · is_402" : ""}</dd></div>
       ${api.last_probed_at ? `<div class="ledger-row"><dt>Último probe</dt><dd class="mono">${escapeHtml(formatProbedAt(api.last_probed_at))}</dd></div>` : ""}
       ${api.country && api.country.length > 0 ? `<div class="ledger-row"><dt>País/región</dt><dd>${api.country.map((c) => `<span class="badge-country">${escapeHtml(c)}</span>`).join(" ")}</dd></div>` : ""}
@@ -346,50 +331,130 @@ function renderDetail(api) {
   });
 }
 
+function inclusionRules() {
+  return [
+    "## Inclusión (qué entra al índice público)",
+    "",
+    "LupaPlaza es un **índice de liquidación** para agentes en LatAm: qué `endpoint_url` se puede pagar **ahora** y devolver datos.",
+    "",
+    "Para aparecer en el HTML público, `/discovery/resources` y este listado hace falta **las tres**:",
+    "",
+    "1. **Mainnet** — red de producción evidenciada en el 402 (p. ej. Base `eip155:8453`). Testnet (Base Sepolia, Solana Devnet) no entra.",
+    "2. **402 live** — el probe vio HTTP 402 con challenge pagable (`network`, `asset`, `amount`, `payTo`). Un 200 de landing no es paywall.",
+    "3. **Preferencia LatAm / AR** — priorizamos endpoints útiles para agentes que operan en LatAm, sobre todo Argentina. No es un dump global de x402.",
+    "",
+    "### Qué no es LupaPlaza",
+    "",
+    "- **LupaRiel** es el mapa de rieles (cómo se mueve el valor). Acá no mapeamos rails.",
+    "- **LupaPago** es el directorio de fees de PSP. Acá no catalogamos comisiones: si un recorte de fee es cobrable por x402, entra como *endpoint*, no como directorio de precios.",
+    "- No somos Coinbase Bazaar ni un índice mundial de miles de servicios.",
+    "",
+    "### Lab vs público",
+    "",
+    "`data/apis.json` y `/api/apis.json` pueden guardar filas testnet/dead/incomplete para el lab y el probe. El HTML público, el sitemap y `/discovery/resources` **solo** muestran mainnet + 402 live.",
+  ];
+}
+
+function renderMetodologia(updatedAt) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    name: `Metodología — ${SITE_NAME}`,
+    description: "Reglas de inclusión del índice de liquidación LupaPlaza.",
+    url: `${SITE_URL}/metodologia/`,
+  };
+
+  const body = `${siteHeader("metodologia")}
+<main class="page page-detail">
+  <nav class="breadcrumbs"><a href="${BASE_PATH}/">Listado</a> <span aria-hidden="true">/</span> Metodología</nav>
+  <article class="prose">
+    <p class="eyebrow">${SITE_NAME} · inclusión</p>
+    <h1>Cómo entra un endpoint</h1>
+    <p class="detail-desc">LupaPlaza responde una sola pregunta: <strong>qué URL puede pagar un agente ahora y llevarse los datos</strong>. El resto (rieles, fees, dumps globales) es otro producto.</p>
+
+    <h2>Qué entra</h2>
+    <ol>
+      <li><strong>Mainnet.</strong> Red de producción evidenciada en el challenge 402 (p. ej. Base <span class="mono">eip155:8453</span>). Testnet no entra al índice público.</li>
+      <li><strong>402 live.</strong> El probe tiene que ver un HTTP 402 con <span class="mono">network</span>, <span class="mono">asset</span>, <span class="mono">amount</span> y <span class="mono">payTo</span>. Un 200 de marketing no es paywall.</li>
+      <li><strong>Preferencia LatAm / AR.</strong> Priorizamos endpoints útiles para agentes que operan en LatAm, sobre todo Argentina. No listamos el Bazaar entero.</li>
+    </ol>
+
+    <h2>Qué no es LupaPlaza</h2>
+    <ul>
+      <li><strong>LupaRiel</strong> — mapa de rieles: cómo se mueve el valor. Acá no mapeamos rails.</li>
+      <li><strong>LupaPago</strong> — directorio de fees de PSP. Acá no catalogamos comisiones. Un recorte cobrable (p. ej. Mobbex vía x402) entra como endpoint, no como tabla de precios.</li>
+      <li><strong>Dump global x402</strong> — no somos Coinbase Bazaar. Dead y testnet quedan en el lab, no en el HTML.</li>
+    </ul>
+
+    <h2>Lab vs vista pública</h2>
+    <p><span class="mono">data/apis.json</span> y <a href="${BASE_PATH}/api/apis.json">/api/apis.json</a> pueden tener filas testnet, dead o incomplete para el probe. El listado, el sitemap y <a href="${BASE_PATH}/discovery/resources">/discovery/resources</a> solo publican mainnet + 402 live.</p>
+    <p>No hay playground ni sandbox. El agente paga el <span class="mono">endpoint_url</span> del seller.</p>
+
+    <h2>Cómo se clasifica</h2>
+    <ul>
+      <li><strong>mainnet</strong> — 402 live en red mainnet. Esto es lo público.</li>
+      <li><strong>testnet</strong> — 402 live en testnet (p. ej. Base Sepolia). Lab solamente.</li>
+      <li><strong>dead</strong> — inalcanzable o no-402 cuando se esperaba paywall.</li>
+      <li><strong>incomplete</strong> — hubo 402 pero faltan campos para pagar.</li>
+    </ul>
+    <p>Última actualización del catálogo: <span class="mono">${updatedAt}</span>.</p>
+  </article>
+</main>
+${siteFoot(updatedAt)}`;
+
+  return layout({
+    title: `Metodología — ${SITE_NAME}`,
+    description: "Reglas de inclusión: mainnet, 402 live, preferencia LatAm/AR. Contraste con LupaRiel y LupaPago.",
+    canonical: `${SITE_URL}/metodologia/`,
+    body,
+    jsonLd,
+  });
+}
+
 function renderLlmsTxt({ updatedAt, apis }) {
+  const live = publicListings(apis);
   const lines = [
     `# ${SITE_NAME}`,
     "",
     `> ${SITE_DESC}`,
     "",
-    `Última actualización de datos: ${updatedAt}. Total de APIs (dump): ${apis.length}. Mainnet en discovery: ${apis.filter((a) => a.callable === "mainnet").length}.`,
-    `Producto: ${SITE_NAME}. Código: ${REPO_URL} (slug marketplace-402).`,
+    `Última actualización de datos: ${updatedAt}. Endpoints cobrables ahora (mainnet 402 live): ${live.length}.`,
+    `Producto: ${SITE_NAME}. Host: ${PRODUCTION_ORIGIN}.`,
     "",
     `## Qué es ${SITE_NAME}`,
     "",
-    "Un catálogo chico de APIs LatAm pagables vía x402.",
-    "LupaPlaza ya tiene una semilla pagable en mainnet: recorte de fee de Mobbex vía LupaPago (`lupapago-fee-mobbex`).",
-    "Cada endpoint se prueba (probe) y se clasifica: mainnet | testnet | dead | incomplete.",
-    "Discovery público = **solo mainnet**. Testnet (p. ej. AR Agent en Base Sepolia / eip155:84532) no es inventario de liquidación.",
-    "Incluye taxonomía regional (fx.ar.casa, bcra.deudores, afip.cuit, etc.).",
-    "No listamos 15k servicios wash; preferimos verdad sobre un catálogo bonito.",
-    "El sitio publicado (Vercel / GitHub Pages) es solo el output estático de `npm run build`.",
-    "No hay servidor Express en producción. Submit, probe en vivo y MCP call-through son local-only.",
+    "Índice de liquidación para agentes en LatAm: qué `endpoint_url` se puede pagar ahora y devolver datos.",
+    "No es un mapa de rieles (eso es LupaRiel). No es un directorio de fees de PSP (eso es LupaPago). No es un dump global de x402.",
+    `Semilla pública actual: recorte de fee de Mobbex vía LupaPago (\`lupapago-fee-mobbex\`) — entra porque es un endpoint cobrable, no porque LupaPlaza sea un catálogo de fees.`,
+    "El sitio publicado (Cloudflare Pages, proyecto `lupaplaza`) es el output estático de `npm run build`.",
+    "No hay servidor Express en producción. No hay playground ni sandbox.",
+    "",
+    ...inclusionRules(),
     "",
     "## Para agentes",
     "",
     "Este sitio está pensado para ser leído tanto por personas como por agentes/LLMs.",
-    "El HTML de cada página ya contiene el listado (sin necesidad de ejecutar JS).",
-    "La vista humana por defecto es mainnet; testnet/dead/incomplete se muestran con filtros.",
+    "El HTML público solo lista endpoints cobrables ahora (mainnet + 402 live). No hay tabs de testnet/dead.",
     "",
     "### Rutas de discovery (estáticas, sin Express)",
     "",
-    `- [/.well-known/x402.json](${SITE_URL}/.well-known/x402.json): marketplace de APIs pagables en **mainnet**`,
-    `- [/discovery/resources](${SITE_URL}/discovery/resources): catálogo Bazaar-shaped **solo mainnet** (archivo sin extensión)`,
-    `- [/discovery/resources.json](${SITE_URL}/discovery/resources.json): el mismo feed mainnet, con extensión`,
-    `- [/api/apis.json](${SITE_URL}/api/apis.json): dump completo con callable honesto (mainnet/testnet/dead/incomplete). Discovery está filtrado a mainnet.`,
+    `- [/.well-known/x402.json](${SITE_URL}/.well-known/x402.json): índice de endpoints cobrables (mainnet + 402 live)`,
+    `- [/discovery/resources](${SITE_URL}/discovery/resources): catálogo Bazaar-shaped **solo mainnet 402 live**`,
+    `- [/discovery/resources.json](${SITE_URL}/discovery/resources.json): el mismo feed, con extensión`,
+    `- [/metodologia/](${SITE_URL}/metodologia/): reglas de inclusión (humanos)`,
+    `- [/api/apis.json](${SITE_URL}/api/apis.json): dump de lab con callable honesto. No es el índice público.`,
     `- [/openapi.json](${SITE_URL}/openapi.json): OpenAPI 3.1 spec`,
     `- [/llms.txt](${SITE_URL}/llms.txt): esta guía`,
-    `- [/mcp/manifest.json](${SITE_URL}/mcp/manifest.json): herramientas MCP. Agentes descubren mainnet vía /discovery/resources; testnet es para humanos/local.`,
+    `- [/mcp/manifest.json](${SITE_URL}/mcp/manifest.json): herramientas MCP. Agentes: usá /discovery/resources.`,
     "",
-    "No hay `GET /api/search` en el host estático. Filtrá `discovery/resources` (mainnet) o `apis.json` (todas las filas) en el cliente.",
+    "No hay `GET /api/search` en el host estático. Filtrá `discovery/resources` (índice público) en el cliente.",
     "La búsqueda con query params vive solo en Express local: `GET http://localhost:3402/api/search`.",
     "",
     "### MCP (Model Context Protocol) en español",
     "",
     "Tres herramientas. En el host estático solo hay un manifest: no hay proxy MCP público ni pay-through.",
     "",
-    "- **buscar_servicios**: leé `/discovery/resources` (mainnet) o `/api/apis.json` (dump completo) y filtrá (gratis)",
+    "- **buscar_servicios**: leé `/discovery/resources` (índice público) y filtrá (gratis)",
     "- **obtener_servicio**: buscá el `id` en ese catálogo (gratis)",
     "- **llamar_servicio**: pagá el `url`/`payTo` del seller. No hay call-through público.",
     "",
@@ -398,46 +463,33 @@ function renderLlmsTxt({ updatedAt, apis }) {
     "",
     "### Datos descargables",
     "",
-    `- [Dataset completo en JSON](${SITE_URL}/api/apis.json): todas las filas + campos callable/is_402/network/asset/amount/pay_to. Discovery es un subset mainnet.`,
-    `- [Dataset en NDJSON](${SITE_URL}/api/apis.ndjson): un objeto JSON por línea`,
-    `- [Listado navegable](${SITE_URL}/): HTML; default mainnet; chips para testnet/dead/incomplete/todas`,
+    `- [Índice público](${SITE_URL}/discovery/resources.json): solo mainnet + 402 live`,
+    `- [Dump de lab](${SITE_URL}/api/apis.json): todas las filas del probe (testnet/dead/incomplete incluidos). No es la vista pública.`,
+    `- [Listado navegable](${SITE_URL}/): HTML; solo endpoints cobrables ahora`,
+    `- [Metodología](${SITE_URL}/metodologia/): inclusión y contraste vs LupaRiel / LupaPago`,
     "",
-    "## Páginas por API",
+    "## Páginas públicas por API",
     "",
-    ...apis.map((a) => {
-      const callable = a.callable ? ` [${a.callable}]` : "";
+    ...live.map((a) => {
       const country = a.country && a.country.length > 0 ? ` (${a.country.join(", ")})` : "";
-      return `- [${a.name}](${SITE_URL}/apis/${a.slug}/)${country}${callable}: ${a.category} — ${a.price_display}`;
+      return `- [${a.name}](${SITE_URL}/apis/${a.slug}/)${country} [mainnet]: ${a.category} — ${a.price_display}`;
     }),
     "",
-    "## Schema de callable status",
+    "## Schema de callable (lab)",
     "",
-    "- **mainnet**: 402 live en una red mainnet evidenciada (p. ej. eip155:8453, Solana mainnet). Esto es lo que publica /discovery/resources.",
-    "- **testnet**: 402 live en testnet (eip155:84532 Base Sepolia, Solana Devnet, etc.). Todos los listings `ar-agent-*` de Sepolia son testnet, nunca mainnet. No son USDC de producción.",
+    "- **mainnet**: 402 live en una red mainnet evidenciada. Esto es lo que publica el índice.",
+    "- **testnet**: 402 live en testnet. Lab solamente; no es USDC de producción.",
     "- **dead**: inalcanzable, no-402 cuando se esperaba paywall, o fallo claro.",
-    "- **incomplete**: respondió 402 pero faltan network/asset/amount/payTo para pagar. Si el 402 no declara red, network queda null.",
+    "- **incomplete**: respondió 402 pero faltan network/asset/amount/payTo para pagar.",
     "- Un 200 en una landing no es paywall. No se marca mainnet.",
-    "",
-    "## Taxonomía LatAm",
-    "",
-    "Usamos tags Unicode OK (Bazaar solo acepta ASCII). Ejemplos:",
-    "- `fx.ar.casa`: tipos de cambio Argentina (oficial, blue, mep, ccl, cripto, mayorista, tarjeta)",
-    "- `bcra.deudores`: Central de Deudores del BCRA",
-    "- `afip.cuit`: consulta CUIT/CUIL (validación + identidad pública; no es padrón AFIP completo)",
-    "- `infoleg.search`, `infoleg.norma`: legislación argentina",
-    "- `feriados.ar`: feriados nacionales de Argentina",
-    "- `aml.{ar,co,br,mx,cl,pe}`: compliance/AML por país",
-    "- `registro.{rues,cnpj,rfc}`: registros empresariales RUES (CO), CNPJ (BR), RFC (MX)",
     "",
     "## Notas",
     "",
-    "- No hace falta autenticación para leer los datos.",
-    "- Los campos `price_display`, `network`, `url`, `endpoint_url` pueden venir en `null`. `network`/`asset`/`amount`/`pay_to` post-probe salen del 402; no se inventan.",
-    "- El campo `protocol` identifica el rail de pago (hoy siempre `x402`).",
-    "- `callable` se actualiza con `npm run probe` (batch) o `npm run fetch-ar-agent` (first-party AR). Valores: mainnet | testnet | dead | incomplete.",
-    "- Orden de release: probe (o fetch-ar-agent) → `npm run build` → deploy del `public/`.",
-    "- Las APIs first-party de AR (ar-agent-fx.mswitach.workers.dev) se actualizan con `npm run fetch-ar-agent`.",
-    "- Submit de sellers y probe on-demand: `POST` local en :3402 (`/api/submit`, `/api/probe`).",
+    "- No hace falta autenticación para leer el índice.",
+    "- `network`/`asset`/`amount`/`pay_to` post-probe salen del 402; no se inventan.",
+    "- `callable` se actualiza con `npm run probe`. Valores: mainnet | testnet | dead | incomplete.",
+    "- Orden de release: probe → `npm run build` → redeploy del proyecto Cloudflare Pages `lupaplaza`.",
+    "- Submit de sellers y probe on-demand: `POST` local en :3402. No hay playground público.",
   ];
   return lines.join("\n") + "\n";
 }
@@ -447,15 +499,16 @@ function renderRobotsTxt() {
 }
 
 function renderSitemap({ apis }) {
+  const live = publicListings(apis);
   const urls = [
     `${SITE_URL}/`,
+    `${SITE_URL}/metodologia/`,
     `${SITE_URL}/.well-known/x402.json`,
     `${SITE_URL}/discovery/resources.json`,
     `${SITE_URL}/openapi.json`,
     `${SITE_URL}/llms.txt`,
     `${SITE_URL}/mcp/manifest.json`,
-    `${SITE_URL}/api/apis.json`,
-    ...apis.map((a) => `${SITE_URL}/apis/${a.slug}/`),
+    ...live.map((a) => `${SITE_URL}/apis/${a.slug}/`),
   ];
   const body = urls.map((u) => `  <url><loc>${u}</loc></url>`).join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;
@@ -471,7 +524,7 @@ function renderOpenApi() {
     contact: { name: CONTACT_NAME, url: REPO_URL },
   };
   src.servers = [
-    { url: SITE_URL, description: "Estático (Vercel / GitHub Pages) — solo GET de discovery" },
+    { url: SITE_URL, description: "Estático (Cloudflare Pages `lupaplaza`) — índice público + discovery" },
     { url: LOCAL_ORIGIN, description: "Express local — submit, probe, MCP POST, /api/search" },
   ];
   return src;
@@ -492,9 +545,14 @@ function build() {
   const mcpManifest = mcpManifestDocument(SITE_URL, { staticHost: true });
   const publicApis = data.apis.map(({ slug, tags, price, isNew, ...raw }) => raw);
 
+  const live = publicListings(data.apis);
+
   writeFileSync(join(OUT, "index.html"), renderIndex(data));
 
-  for (const api of data.apis) {
+  mkdirSync(join(OUT, "metodologia"), { recursive: true });
+  writeFileSync(join(OUT, "metodologia", "index.html"), renderMetodologia(data.updatedAt));
+
+  for (const api of live) {
     const dir = join(OUT, "apis", api.slug);
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "index.html"), renderDetail(api));
@@ -505,10 +563,15 @@ function build() {
     updated_at: data.updatedAt,
     count: publicApis.length,
     callable_counts: callableCounts,
+    public_view: {
+      filter: "mainnet + live 402",
+      count: live.length,
+      href: `${BASE_PATH}/discovery/resources`,
+    },
     discovery: {
       href: `${BASE_PATH}/discovery/resources`,
-      filter: "mainnet",
-      note: "/discovery/resources y resources.json son un subset mainnet-only. Este dump incluye todas las filas con callable honesto.",
+      filter: "mainnet + live 402",
+      note: "Este dump es de lab. El HTML público y /discovery/resources solo listan mainnet + 402 live.",
     },
     apis: publicApis,
   });
@@ -528,14 +591,28 @@ function build() {
   writeFileSync(join(OUT, "sitemap.xml"), renderSitemap(data));
   // GitHub Pages / Jekyll ignora .well-known si no hay .nojekyll.
   writeFileSync(join(OUT, ".nojekyll"), "");
+  writeFileSync(
+    join(OUT, "_headers"),
+    [
+      "/discovery/resources",
+      "  Content-Type: application/json; charset=utf-8",
+      "",
+      "/.well-known/x402.json",
+      "  Content-Type: application/json; charset=utf-8",
+      "",
+      "/mcp/manifest.json",
+      "  Content-Type: application/json; charset=utf-8",
+      "",
+    ].join("\n")
+  );
 
   cpSync(join(ROOT, "src", "styles.css"), join(OUT, "styles.css"));
   cpSync(join(ROOT, "src", "app.js"), join(OUT, "app.js"));
 
-  console.log(`Build OK: ${data.apis.length} APIs → ${OUT}`);
+  console.log(`Build OK: HTML público ${live.length} · dump lab ${publicApis.length} → ${OUT}`);
   console.log(`  ${SITE_NAME} @ ${SITE_URL}`);
-  console.log(`  discovery mainnet: ${catalog.count} · dump: ${publicApis.length} (mainnet ${callableCounts.mainnet} / testnet ${callableCounts.testnet} / dead ${callableCounts.dead} / incomplete ${callableCounts.incomplete})`);
-  console.log("  estático: /.well-known/x402.json /discovery/resources /openapi.json /mcp/manifest.json /llms.txt");
+  console.log(`  cobrables ahora: ${catalog.count} · lab: mainnet ${callableCounts.mainnet} / testnet ${callableCounts.testnet} / dead ${callableCounts.dead} / incomplete ${callableCounts.incomplete}`);
+  console.log("  estático: / /metodologia/ /.well-known/x402.json /discovery/resources /llms.txt");
 }
 
 build();

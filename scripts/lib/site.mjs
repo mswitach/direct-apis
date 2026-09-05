@@ -1,20 +1,36 @@
 // Identidad de producto y formas machine-readable compartidas
 // entre el build estático y Express local. El slug del repo sigue
 // siendo marketplace-402; el nombre visible es LupaPlaza.
+//
+// Job de producto (lock): índice de liquidación LatAm — qué endpoint
+// URL puede un agente pagar ahora y llevarse datos. No es mapa de
+// rieles (LupaRiel) ni directorio de fees de PSP (LupaPago).
 
 export const SITE_NAME = "LupaPlaza";
+export const SITE_HEADLINE = "Endpoints cobrables ahora";
 export const SITE_DESC =
-  "Catálogo chico de APIs LatAm pagables por uso vía x402. Discovery público = solo 402 live en mainnet. Testnet (p. ej. AR Agent en Base Sepolia) es para humanos y uso local, no inventario de liquidación.";
+  "Índice de liquidación LatAm: qué endpoint puede pagar un agente ahora (mainnet, 402 live) y llevarse los datos. No es LupaRiel (rieles) ni LupaPago (fees).";
 export const SITE_VERSION = "2.0.0";
 export const REPO_URL = "https://github.com/mswitach/marketplace-402";
 export const CONTACT_NAME = "Marcelo Switach";
 export const LOCAL_ORIGIN = "http://localhost:3402";
 export const LOCAL_PORT = 3402;
+export const PRODUCTION_ORIGIN = "https://lupaplaza.com";
 
 export const MCP_LIVE_NOTE =
   "El proxy MCP en vivo (POST /mcp/buscar_servicios, /mcp/obtener_servicio, /mcp/llamar_servicio) corre solo en Express local (`npm run dev` :3402). En el host estático no hay pay-through público: el agente paga el endpoint del seller listado en el catálogo.";
 
 export const DISCOVERY_FILTER = "mainnet";
+
+// Vista pública = mainnet + 402 live. Testnet/dead/incomplete pueden
+// quedar en data/apis.json (lab) y en /api/apis.json; no entran al HTML.
+export function isPublicListing(api) {
+  return Boolean(api) && api.callable === DISCOVERY_FILTER && api.is_402 === true;
+}
+
+export function publicListings(apis) {
+  return (apis || []).filter(isPublicListing);
+}
 
 export function toDiscoveryResource(api) {
   return {
@@ -48,18 +64,18 @@ export function toDiscoveryResource(api) {
 }
 
 export function discoveryCatalog(data, apis) {
-  // Inventario de agentes: solo listings con 402 live en mainnet.
-  // Testnet / dead / incomplete viven en /api/apis.json (humanos y local).
-  const resources = (apis || data.apis)
+  // Inventario de agentes: solo listings cobrables ahora (mainnet + 402 live).
+  // Testnet / dead / incomplete viven en /api/apis.json (lab).
+  const resources = publicListings(apis || data.apis)
     .filter((api) => api.endpoint_url)
-    .filter((api) => api.callable === DISCOVERY_FILTER)
     .map(toDiscoveryResource);
 
   return {
     marketplace: SITE_NAME,
     description:
-      "APIs x402 pagables en mainnet. Este feed no incluye testnet (Base Sepolia, Solana Devnet, AR Agent) ni listings dead/incomplete.",
+      "Índice de liquidación: endpoints x402 cobrables ahora (mainnet, 402 live). No incluye testnet, dead, incomplete, ni dumps globales.",
     filter: DISCOVERY_FILTER,
+    inclusion: "mainnet + live 402",
     updated_at: data.updated_at || data.updatedAt,
     count: resources.length,
     resources,
@@ -81,12 +97,12 @@ export function wellKnownDocument(origin, { staticHost = false } = {}) {
   return {
     name: SITE_NAME,
     description:
-      "Marketplace de APIs x402 pagables en mainnet. /discovery/resources lista solo 402 live en redes mainnet (p. ej. eip155:8453). Testnet no es inventario de liquidación de producción.",
+      "Índice de liquidación LatAm: /discovery/resources lista solo endpoints cobrables ahora (mainnet, 402 live). No es LupaRiel (mapa de rieles) ni LupaPago (fees de PSP).",
     version: SITE_VERSION,
     protocol: "x402",
     marketplace: true,
     inventory: "mainnet",
-    note: "Los agentes descubren mainnet en /discovery/resources. /api/apis.json es el dump completo con callable honesto (mainnet|testnet|dead|incomplete). Testnet (incl. AR Agent en eip155:84532) no es inventario settleable de producción.",
+    note: "Los agentes descubren endpoints cobrables en /discovery/resources (mainnet + 402 live). /api/apis.json es el dump de lab (incluye testnet/dead/incomplete). El HTML público no lista esos estados. Testnet no es inventario settleable.",
     discovery,
     mcp: staticHost
       ? {
@@ -127,7 +143,7 @@ export function mcpTools() {
             type: "string",
             enum: ["mainnet", "testnet", "dead", "incomplete"],
             description:
-              "mainnet = 402 live en red mainnet (lo que publica /discovery/resources). testnet/dead/incomplete son para humanos y Express local.",
+              "mainnet = 402 live en red mainnet (lo que publica el índice). testnet/dead/incomplete son lab (/api/apis.json), no el listado público.",
           },
         },
       },
@@ -166,7 +182,7 @@ export function mcpManifestDocument(origin, { staticHost = false } = {}) {
   return {
     name: `${SITE_NAME} MCP`,
     description:
-      "Herramientas MCP en español. En el host estático los agentes descubren mainnet vía /discovery/resources. Testnet es para humanos y Express local; no se anuncia como inventario settleable.",
+      "Herramientas MCP en español. En el host estático los agentes descubren endpoints cobrables (mainnet + 402 live) vía /discovery/resources. El HTML público no lista testnet/dead.",
     version: SITE_VERSION,
     language: "es",
     tools: staticHost

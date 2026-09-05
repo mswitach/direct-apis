@@ -303,6 +303,14 @@ select, .btn-ghost, .btn-primary {
 
 .empty-state { color: var(--ink-dim); padding: 2rem 0; text-align: center; }
 
+/* ---- metodología ---- */
+.prose { max-width: 40rem; }
+.prose h2 { font-size: 1.25rem; margin: 2rem 0 0.7rem; }
+.prose p { color: var(--ink-dim); margin: 0 0 1rem; }
+.prose li { margin: 0.45rem 0; color: var(--ink); }
+.prose strong { color: var(--ink); }
+.prose ol, .prose ul { padding-left: 1.2rem; margin: 0 0 1.2rem; }
+
 /* ---- detail ---- */
 .breadcrumbs { font-size: 0.82rem; color: var(--ink-dim); margin-bottom: 1.4rem; }
 .breadcrumbs a { text-decoration: none; }
