@@ -305,6 +305,7 @@ function renderDetail(api) {
       ${api.last_probed_at ? `<div class="ledger-row"><dt>Último probe</dt><dd class="mono">${escapeHtml(formatProbedAt(api.last_probed_at))}</dd></div>` : ""}
       ${api.country && api.country.length > 0 ? `<div class="ledger-row"><dt>País/región</dt><dd>${api.country.map((c) => `<span class="badge-country">${escapeHtml(c)}</span>`).join(" ")}</dd></div>` : ""}
       ${api.pay_to ? `<div class="ledger-row"><dt>Pay to</dt><dd class="mono" style="word-break: break-all; font-size: 0.8rem;">${escapeHtml(api.pay_to)}</dd></div>` : ""}
+      ${api.evidence ? `<div class="ledger-row"><dt>Evidencia (tx)</dt><dd class="mono" style="word-break: break-all;"><a href="https://basescan.org/tx/${escapeHtml(api.evidence)}">${escapeHtml(api.evidence)}</a></dd></div>` : ""}
       ${api.extensions && api.extensions.length > 0 ? `<div class="ledger-row"><dt>Extensiones</dt><dd>${api.extensions.map((e) => `<span class="chip">${escapeHtml(e)}</span>`).join(" ")}</dd></div>` : ""}
       <div class="ledger-row"><dt>Detectada</dt><dd class="mono">${escapeHtml(api.date_detected)}</dd></div>
       <div class="ledger-row"><dt>Actualizada</dt><dd class="mono">${escapeHtml(api.date_updated)}</dd></div>
@@ -314,6 +315,7 @@ function renderDetail(api) {
       ${api.endpoint_url ? `<a class="btn-primary" href="${escapeHtml(api.endpoint_url)}">Endpoint ↗</a>` : ""}
       ${api.url && api.url !== api.endpoint_url ? `<a class="btn-ghost" href="${escapeHtml(api.url)}">Sitio oficial ↗</a>` : ""}
       ${api.source_url ? `<a class="btn-ghost" href="${escapeHtml(api.source_url.split(" ; ")[0])}">Fuente ↗</a>` : ""}
+      ${api.evidence ? `<a class="btn-ghost" href="https://basescan.org/tx/${escapeHtml(api.evidence)}">Basescan ↗</a>` : ""}
       <a class="btn-ghost" href="${BASE_PATH}/api/apis.json#${api.slug}">Ver en JSON</a>
     </div>
   </article>
