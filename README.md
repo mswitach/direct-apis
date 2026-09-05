@@ -19,7 +19,7 @@ Sitio publicado (estático):
 
 **LupaPlaza** es el índice de liquidación: `data/apis.json` → `npm run build` → `public/`. Cloudflare Pages (`lupaplaza`) y GitHub Pages sirven solo ese estático.
 
-- **Vista pública:** solo listings `callable: "mainnet"` con `is_402: true`. Hoy: semilla `lupapago-fee-mobbex` ($0.01 USDC en Base).
+- **Vista pública:** solo listings `callable: "mainnet"` con `is_402: true`. Hoy: **6** endpoints (1 LupaPago + 5): `lupapago-fee-mobbex`, LatAmPulse report, 3 recortes `latamref.dev` (policy-rate / IVA / umbral IVA) y Toolrail dólar Argentina.
 - **Inclusión:** mainnet + 402 live + preferencia LatAm/AR. Detalle en `/metodologia/` y `llms.txt`.
 - **Lab:** las filas testnet/dead/incomplete quedan en `data/apis.json` y `/api/apis.json`. No se emiten como HTML público ni como tabs.
 - **Probing honesto:** `callable` sale del 402 real (red CAIP-2, asset, amount, payTo). Un 200 de landing no es paywall.
@@ -118,6 +118,9 @@ URLs de producción (Cloudflare Pages `lupaplaza`):
 - https://lupaplaza.com/
 - https://lupaplaza.com/metodologia/
 - https://lupaplaza.com/apis/lupapago-fee-mobbex/
+- https://lupaplaza.com/apis/latampulse-report/
+- https://lupaplaza.com/apis/latamref-ar-policy-rate/
+- https://lupaplaza.com/apis/toolrail-dolar-argentina/
 - https://lupaplaza.com/.well-known/x402.json
 - https://lupaplaza.com/discovery/resources
 - https://lupaplaza.com/llms.txt
@@ -172,9 +175,12 @@ Unicode OK (Bazaar solo acepta ASCII):
 
 - **Argentina**:
   - `fx.ar.oficial`, `fx.ar.blue`, `fx.ar.bolsa`, `fx.ar.mep`, `fx.ar.ccl`, `fx.ar.contadoconliqui`, `fx.ar.cripto`, `fx.ar.mayorista`, `fx.ar.tarjeta`
-  - `bcra.deudores`, `afip.cuit`
+  - `bcra.deudores`, `bcra.policy-rate`, `afip.cuit`
+  - `vat.ar`, `iva.ar`, `vat.ar.registration-threshold`
   - `infoleg.norma`, `infoleg.search`
-  - `feriados.ar`
+  - `feriados.ar`, `dolar`
+
+- **LatAm macro / FX regional**: `fx.latam`, `macro.latam`, `commodities`
 
 - **AML/Compliance regional**: `aml.ar`, `aml.co`, `aml.br`, `aml.mx`, `aml.cl`, `aml.pe`
 

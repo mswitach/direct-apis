@@ -425,7 +425,7 @@ function renderLlmsTxt({ updatedAt, apis }) {
     "",
     "Índice de liquidación para agentes en LatAm: qué `endpoint_url` se puede pagar ahora y devolver datos.",
     "No es un mapa de rieles (eso es LupaRiel). No es un directorio de fees de PSP (eso es LupaPago). No es un dump global de x402.",
-    `Semilla pública actual: recorte de fee de Mobbex vía LupaPago (\`lupapago-fee-mobbex\`) — entra porque es un endpoint cobrable, no porque LupaPlaza sea un catálogo de fees.`,
+    "Índice público actual: **6** endpoints mainnet (1 LupaPago + 5). Semilla LupaPago: recorte de fee de Mobbex (`lupapago-fee-mobbex`) — entra porque es un endpoint cobrable, no porque LupaPlaza sea un catálogo de fees. Los otros cinco: LatAmPulse report, tres recortes latamref.dev (policy-rate / vat / vat-registration-threshold; latamref.com no resuelve DNS) y Toolrail dólar Argentina.",
     "El sitio publicado (Cloudflare Pages, proyecto `lupaplaza`) es el output estático de `npm run build`.",
     "No hay servidor Express en producción. No hay playground ni sandbox.",
     "",
